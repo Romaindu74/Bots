@@ -1,0 +1,6 @@
+{
+    "discord": "discord.py[voice]",
+    "PIL": "pillow",
+    "youtube_dl": "youtube_dl",
+    "requests": "requests"
+}
