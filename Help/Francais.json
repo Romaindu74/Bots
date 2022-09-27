@@ -1,0 +1,131 @@
+{
+    "Admin": {
+        "Name": "Commandes Administrateur",
+        "Value": [
+            {
+                "Description": "Cr\u00e9e un role r\u00e9action avec un titre et une description au choix",
+                "Name": "Add-Role-Reac"
+            },
+            {
+                "Description": "Force le bot \u00e0 skip la music",
+                "Name": "Fs (Force Skip)"
+            },
+            {
+                "Description": "Ajoute un pr\u00e9fixe au serveur",
+                "Name": "New-Prefix"
+            },
+            {
+                "Description": "Supprime le nombre de message voulu",
+                "Name": "Purge"
+            },
+            {
+                "Description": "Supprime le pr\u00e9fixe choisi du serveur",
+                "Name": "Remove-Prefix"
+            }
+        ]
+    },
+    "Creator": {
+        "Name": "Commandes Cr\u00e9ateur",
+        "Value": [
+            {
+                "Description": "Cr\u00e9e un nouveau statuts au bot",
+                "Name": "New-Status"
+            },
+            {
+                "Description": "Supprime un statuts au bot",
+                "Name": "Remove-Status"
+            },
+            {
+                "Description": "Montre les statuts du bot",
+                "Name": "View-Status"
+            },
+            {
+                "Description": "V\u00e9rifi les fichier des serveur",
+                "Name": "Rerif-guild"
+            }
+        ]
+    },
+    "Footer": {
+        "Name": "Liens Utiles",
+        "Value": [
+            {
+                "Description": "**Click**",
+                "Name": "Invite Moi",
+                "Url": "https://discord.com/oauth2/authorize?client_id={bot_id}&permissions=8&scope=bot"
+            },
+            {
+                "Description": "**Click**",
+                "Name": "Mon site web",
+                "Url": "https://candice2065.000webhostapp.com"
+            },
+            {
+                "Description": "Le bot peux mettre du temps \u00e0 repondre"
+            }
+        ]
+    },
+    "User": {
+        "Name": "Commandes Utilisateur",
+        "Value": [
+            {
+                "Description": "Connecte le bot \u00e0 votre salon vocal",
+                "Name": "Join"
+            },
+            {
+                "Description": "Deconnecter le bot du salon vocal",
+                "Name": "Leave"
+            },
+            {
+                "Description": "Met la music en pause",
+                "Name": "Pause"
+            },
+            {
+                "Description": "Donne la latence du bot",
+                "Name": "Ping"
+            },
+            {
+                "Description": "Ajoute la music choisi dans la queue (Youtube uniquement)",
+                "Name": "Play"
+            },
+            {
+                "Description": "Supprime la music choisi de la queue",
+                "Name": "Remove"
+            },
+            {
+                "Description": "M\u00e9lange la queue",
+                "Name": "Shuffle"
+            },
+            {
+                "Description": "Skip la music (3 personnes sont requis)",
+                "Name": "Skip"
+            },
+            {
+                "Description": "Arr\u00eate la music et vide la queue",
+                "Name": "Stop"
+            },
+            {
+                "Description": "Remet la music en route",
+                "Name": "Resume"
+            },
+            {
+                "Description": "Affiche la queue",
+                "Name": "Queue"
+            },
+            {
+                "Description": "Donne la list des prefixe du serveur",
+                "Name": "Veiw-Prefix"
+            },
+            {
+                "Description": "R\u00e8gle le volume du bot",
+                "Name": "Volume"
+            },
+            {
+                "Description": "Ce message",
+                "Name": "Help"
+            },
+            {
+                "Description": "Met la music en boucle",
+                "Name": "Loop"
+            }
+        ]
+    }
+}

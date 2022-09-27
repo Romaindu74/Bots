@@ -1,0 +1,131 @@
+{
+    "Admin": {
+        "Name": "Administrator Commands",
+        "Value": [
+            {
+                "Description": "Create a reaction role with a title and description of your choice",
+                "Name": "Add-Role-Reac"
+            },
+            {
+                "Description": "Force the bot to skip the music",
+                "Name": "Fs (Force Skip)"
+            },
+            {
+                "Description": "Add a prefix to the server",
+                "Name": "New-Prefix"
+            },
+            {
+                "Description": "Delete the desired number of messages",
+                "Name": "Purge"
+            },
+            {
+                "Description": "Remove the chosen prefix from the server",
+                "Name": "Remove-Prefix"
+            }
+        ]
+    },
+    "Creator": {
+        "Name": "Creator Commands",
+        "Value": [
+            {
+                "Description": "Create a new bot status",
+                "Name": "New-Status"
+            },
+            {
+                "Description": "Delete a bot status",
+                "Name": "Remove-Status"
+            },
+            {
+                "Description": "Show bot statuses",
+                "Name": "View-Status"
+            },
+            {
+                "Description": "Check server files",
+                "Name": "Rerif-guild"
+            }
+        ]
+    },
+    "Footer": {
+        "Name": "Useful Link",
+        "Value": [
+            {
+                "Description": "**Click**",
+                "Name": "Invite Me",
+                "Url": "https://discord.com/oauth2/authorize?client_id={bot_id}&permissions=8&scope=bot"
+            },
+            {
+                "Description": "**Click**",
+                "Name": "My website",
+                "Url": "https://candice2065.000webhostapp.com"
+            },
+            {
+                "Description": "The bot may take a while to respond"
+            }
+        ]
+    },
+    "User": {
+        "Name": "User Commands",
+        "Value": [
+            {
+                "Description": "Connect the bot to your voice channel",
+                "Name": "Join"
+            },
+            {
+                "Description": "Disconnect the voice channel bot",
+                "Name": "Leave"
+            },
+            {
+                "Description": "Pause the music",
+                "Name": "Pause"
+            },
+            {
+                "Description": "Gives the latency of the bot",
+                "Name": "Ping"
+            },
+            {
+                "Description": "Add the chosen music to the queue (Youtube only)",
+                "Name": "Play"
+            },
+            {
+                "Description": "Delete the chosen music from the queue",
+                "Name": "Remove"
+            },
+            {
+                "Description": "Mix the tail",
+                "Name": "Shuffle"
+            },
+            {
+                "Description": "Skip the music (3 people are required)",
+                "Name": "Skip"
+            },
+            {
+                "Description": "Stop the music and empty the queue",
+                "Name": "Stop"
+            },
+            {
+                "Description": "Restart music if it was paused",
+                "Name": "Resume"
+            },
+            {
+                "Description": "Shows the tail",
+                "Name": "Queue"
+            },
+            {
+                "Description": "Gives the list of server prefixes",
+                "Name": "Veiw-Prefix"
+            },
+            {
+                "Description": "Set volume of bot",
+                "Name": "Volume"
+            },
+            {
+                "Description": "This message",
+                "Name": "Help"
+            },
+            {
+                "Description": "Loops the current music",
+                "Name": "Loop"
+            }
+        ]
+    }
+}
