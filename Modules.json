@@ -2,5 +2,6 @@
     "discord": "discord.py[voice]",
     "PIL": "Pillow",
     "youtube_dl": "youtube_dl",
-    "requests": "requests"
+    "requests": "requests",
+    "colorama": "colorama"
 }
