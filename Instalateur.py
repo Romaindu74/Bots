@@ -1,4 +1,3 @@
-import colorama
 import sys
 
 from typing import Union
@@ -8,15 +7,12 @@ from time     import monotonic
 from typing   import Union
 from zipfile import ZipFile
 
-colorama.init(True)
-
 _levelToName = {50: 'CRITICAL', 40: 'ERROR', 30: 'WARNING', 20: 'INFO', 10: 'DEBUG', 0: 'NOTSET'}
-_nameToColor = {50: colorama.Fore.RED, 40: colorama.Fore.RED, 30: colorama.Fore.YELLOW, 20: colorama.Fore.GREEN, 10: colorama.Fore.WHITE, 0: colorama.Fore.WHITE}
 
 def Log(Level: _levelToName, text: str, exit: bool = False, **options) -> Union[str, None]:
     context = '[{0}] [{1}] : {2}'.format(
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        _nameToColor.get(Level, colorama.Fore.WHITE)+_levelToName.get(Level, 0)+colorama.Fore.WHITE,
+        _levelToName.get(Level, 0),
         text
     )
 
