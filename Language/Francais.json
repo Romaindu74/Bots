@@ -1,6 +1,6 @@
 {
     "0.0.0.0.0": "Le module {Name} n'a pas été trouvé",
-    "0.0.0.0.1": "Une erreur s'est produite dans le fichier {Name}\nErreur : {Error}",
+    "0.0.0.0.1": "Une erreur s'est produite dans le fichier {File}\nErreur : {Error}",
     "0.0.0.0.2": "Le bot est en cours d'initialisation",
     "0.0.0.0.3": "Voulez-vous une interface pour le bot (Yes/No) : ",
     "0.0.0.0.4": "La réponse choisie est incorrecte",
