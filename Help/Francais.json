@@ -51,7 +51,7 @@
             {
                 "Description": "**Click**",
                 "Name": "Invite Moi",
-                "Url": "https://discord.com/oauth2/authorize?client_id={bot_id}&permissions=8&scope=bot"
+                "Url": "https://discord.com/oauth2/authorize?client_id={bot_id}&scope=bot%20applications.commands&permissions=2146958847"
             },
             {
                 "Description": "**Click**",
