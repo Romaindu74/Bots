@@ -62,7 +62,7 @@ class UpDate:
             for module in modules:
                 try:
                     __import__(module)
-                except ImportError:
+                except (ImportError, ModuleNotFoundError):
                     try:
                         pip.main(['install', module])
                     except DistributionNotFound:
@@ -147,5 +147,12 @@ class UpDate:
 
         os.remove(f'V {version}.zip')
         Log(20, 'l\'installation a été terminé avec succès')
+
+        try:
+            with open('{0}/User/__Json__/Main.json'.format(self.Path), 'r') as f:
+                json.dump(self.main, f, ident = 4)
+                f.close()
+        except FileNotFoundError:
+            bot_version = '0.0.0.0'
 
         return True

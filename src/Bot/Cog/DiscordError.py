@@ -27,6 +27,11 @@ class DiscordError(commands.Cog):
             if isinstance(error, commands.CommandNotFound): 
                 await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.7.5'), description = Get_User_Lang(ctx.author.id).get('0.0.0.7.6'), color = ctx.author.color), reference=False)
                 return
+
+            if isinstance(error, discord.Forbidden):
+                await send(ctx, message = 'Je n\'ai pas reussi a faire cela', reference=False)
+                return
+
             Log(30, Get_User_Lang(ctx.author.id).get('0.0.0.7.7').format(Error = error))
             await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.7.8'), description = Get_User_Lang(ctx.author.id).get('0.0.0.7.9').format(Error = error)), reference=False)
 

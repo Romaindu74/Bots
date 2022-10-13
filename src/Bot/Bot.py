@@ -5,6 +5,7 @@ from .GetLang        import Get_Lang
 from .type.Interface import Interface as _Interface
 from .type.Options   import Options   as _Options
 from .Statu          import Status    as _Status
+from .Loop           import Loop      as _Loop
 
 from .Utils          import Open, MISSING
 
@@ -46,6 +47,7 @@ class Bot(threading.Thread):
         self._options: _Options     = Options
 
         self._status: _Status       = _Status(self, self._options)
+        self._loop: _Loop           = _Loop(self)
 
         if not os.path.exists('{0}/User/Bots/{1}/'.format(self._options.Path, self._id)):
             os.makedirs('{0}/User/Bots/{1}/'.format(self._options.Path, self._id), exist_ok = True)
@@ -83,6 +85,7 @@ class Bot(threading.Thread):
         if not await AddCog(self):
             Log(30, 'Les modules n\'ont pas reussi a etre ajouter')
         self.Status.Start()
+        self._loop.start()
 
         try:
             await self.Client.start(self.Info.get('Token'))
@@ -116,6 +119,7 @@ class Bot(threading.Thread):
             return False
 
         self._status.Stop()
+        self._loop.stop()
         try:
             self.Client.loop.create_task(self.Client.close())
         except Exception:

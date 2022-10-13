@@ -5,6 +5,7 @@ from .type.Bot     import Bot
 from .type.Options import Options
 
 from typing import Union
+import shutil
 
 try:
     from PIL import Image, ImageTk
@@ -56,10 +57,12 @@ class Interface(threading.Thread):
         Log(20, Get_Lang.get('0.0.1.5.3'))
         self._main__ = tk.Tk()
         self._main_  = tk.Frame(self._main__)
-        self._main_.pack(fill = tk.BOTH, expand=tk.YES)
+        self._main_.place(width=900, height=500)
+        # self._main_.pack(fill = tk.BOTH, expand=tk.YES)
 
         self._main__.title(self.options.Info.get('Windows-Title', 'Sayu#0475'))
         self._main__.geometry('900x500')
+        self._main__.resizable(False, False)
 
         if os.path.exists(self.options.Path+'/Bot/icon.png'):
             self._main__.iconphoto(False, tk.PhotoImage(file=self.options.Path+'/Bot/icon.png'))
@@ -77,7 +80,8 @@ class Interface(threading.Thread):
 
     def _scroll_bar(self) -> None:
         self.ScrollBar = tk.Scrollbar(self._main__)
-        self.ScrollBar.place(relx=0.981,height=self._main__.winfo_height(), bordermode = tk.OUTSIDE)
+        self.ScrollBar.pack(fill = tk.BOTH, side = tk.RIGHT)
+        # self.ScrollBar.place(relx=0.981,height=self._main__.winfo_height(), bordermode = tk.OUTSIDE)
 
     def stop(self) -> None:
         Log(20, Get_Lang.get('0.0.1.4.6'))
@@ -453,6 +457,49 @@ class BotConfig(object):
         self._Owner               = tk.Button(self._main_, text = 'Createur', command=self.Owner)
         self._Owner.pack(fill = tk.BOTH)
 
+
+        self._Owner               = tk.Button(self._main_, text = 'Supprimer', command=self.Sup_Bot, fg = 'red')
+        self._Owner.pack(fill = tk.BOTH)
+
+    def Sup_Bot(self):
+        if not messagebox.askyesno('Supprimer', 'Est tu sur de vouloir supprimer ce Bot'):
+            return
+
+        if not self.del_():
+            messagebox.showerror('Error', 'La suppresion du bot a echouer')
+
+        self._Main()
+
+    def del_(self) -> bool:
+        if self.bot.Status_ != '0.0.0.6.2':
+            if not self.bot.Stop():
+                return False
+
+        del self.options.Bots[self.bot.Id]
+        try:
+            self.main.bots_[self.bot.Id][0].destroy()
+        except IndexError:
+            pass
+
+        if not os.path.exists('{0}/User/Bots/Bots.json'.format(self.options.Path)):
+            os.makedirs('{0}/User/Bots'.format(self.options.Path), exist_ok = True)
+            Save('{0}/User/Bots/Bots.json'.format(self.options.Path), {'Bots': []})
+
+        try:
+            Bots = Open('{0}/User/Bots/Bots.json'.format(self.options.Path), {'Bots': []}).get('Bots', [])
+            Bots.remove(str(self.bot.Id))
+            Save('{0}/User/Bots/Bots.json'.format(self.options.Path), {'Bots': Bots})
+
+            if os.path.exists('{0}/User/Bots/{1}/'.format(self.options.Path, self.bot.Id)):
+                shutil.rmtree('{0}/User/Bots/{1}/'.format(self.options.Path, self.bot.Id), ignore_errors=True)
+
+            if os.path.exists('{0}/User/{1}/'.format(self.options.Path, self.bot.Id)):
+                shutil.rmtree('{0}/User/{1}/'.format(self.options.Path, self.bot.Id), ignore_errors=True)
+
+        except Exception:
+            return False
+
+        return True
 
     def _Main(self) -> None:
         if self.main.Config != None:
