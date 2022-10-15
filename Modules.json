@@ -3,5 +3,6 @@
     "PIL": "pillow",
     "youtube_dl": "youtube_dl",
     "requests": "requests",
-    "colorama": "colorama"
+    "colorama": "colorama",
+    "PyNaCl": "PyNaCl"
 }
