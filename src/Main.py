@@ -5,8 +5,14 @@ except FileNotFoundError as e:
 except Exception as e:
     raise Exception(e)
 
-if not Bot.UpDate().Start():
-    Bot.Log(30, 'The update could not be done')
+_log = Bot.Logger(__name__)
 
+_log.Info('Verification des mise a jour')
+if not Bot.UpDate().Start():
+    _log.Error('The update could not be done')
+
+_log.Info('Lancement du programe')
 if Bot.Ready:
     Bot.Main()
+else:
+    _log.Critical('Le programe n\' es pas pret')

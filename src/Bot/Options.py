@@ -1,19 +1,21 @@
 from .Utils     import Save, Open, MISSING
 from .GetLang   import Get_Lang
 from .Bot       import Bot as _Bots
-from .Logger    import Log
+from .Logger    import Logger
 
 from typing     import Union
 
 import os
 
+_log = Logger(__name__)
+
 try:
     from requests             import Session, exceptions, Response
 except ImportError:
     from pip._vendor.requests import Session, exceptions, Response
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'requests'))
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'requests'))
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 
 class Options:
@@ -36,13 +38,13 @@ class Options:
         try:
             request = self._sessions.get(url, stream=stream)
         except exceptions.HTTPError as error:
-            Log(50, f"Request: {url}\nHttp Error: {error}")
+            _log.Critical(f"Request: {url}\nHttp Error: {error}")
         except exceptions.ConnectionError as error:
-            Log(50, f"Request: {url}\nError Connecting: {error}")
+            _log.Critical(f"Request: {url}\nError Connecting: {error}")
         except exceptions.Timeout as error:
-            Log(50, f"Request: {url}\nTimeout Error: {error}")
+            _log.Critical(f"Request: {url}\nTimeout Error: {error}")
         except exceptions.RequestException as error:
-            Log(50, f"Request: {url}\nError: {error}")
+            _log.Critical(f"Request: {url}\nError: {error}")
         else:
             return request
 
@@ -51,14 +53,15 @@ class Options:
 
     def Start_Bots(self) -> bool:
         try:
-            Log(20, Get_Lang.get('0.0.1.7.0'))
+            _log.Info(Get_Lang.get('0.0.1.7.0'))
             if not os.path.exists('{0}/User/Bots/Bots.json'.format(self.Path)):
                 os.makedirs('{0}/User/Bots'.format(self.Path), exist_ok = True)
                 Save('{0}/User/Bots/Bots.json'.format(self.Path), {'Bots': []})
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
+        _log.Info('Chargement des bot')
         for Bot in Open('{0}/User/Bots/Bots.json'.format(self.Path), {'Bots': []}).get('Bots', []):
             Bot_ = _Bots(Bot, self)
 
@@ -66,6 +69,7 @@ class Options:
                 Bot_.start()
                 self._bots[Bot] = Bot_
 
+        _log.Info('Les bot ont corectement été charger')
         return True
 
     def add(self, Id: str = MISSING) -> bool:
@@ -75,11 +79,13 @@ class Options:
             while not Bot_.Initialized and not Bot_.Error:
                 pass
 
+            _log.Info('Lancement du bot')
             Bot_.start()
             self._bots[Id] = Bot_
 
             return True
         else:
+            _log.Warn('L\'id du bot est manquant')
             return False
 
     def __bool__(self) -> bool:
@@ -87,8 +93,6 @@ class Options:
 
     def __len__(self) -> int:
         return len(self._bots)
-
-
 
     @property
     def sessions(self) -> Session:
@@ -102,8 +106,6 @@ class Options:
     def Initialized(self) -> bool:
         return self._initialized
 
-
-
     @property
     def Info(self) -> dict:
         return self._info
@@ -113,7 +115,6 @@ class Options:
         if not value == MISSING:
             self._info = value
         return self._info
-
 
     @property
     def Bots(self) -> dict[_Bots]:

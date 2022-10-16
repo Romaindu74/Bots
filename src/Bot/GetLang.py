@@ -2,15 +2,17 @@ import os
 import json
 from typing import Union
 
-from .Logger import Log
+from .Logger import Logger
+
+_log = Logger(__name__)
 
 try:
     from requests             import Session
 except ImportError:
     from pip._vendor.requests import Session
-    Log(50, 'Module requests is not found', True)
+    _log.Critical('Module requests is not found', True)
 except Exception as e:
-    Log(50, "An error occurred in file {0}\nError: {1}".format(__file__, e), True)
+    _log.Critical("An error occurred in file {0}\nError: {1}".format(__file__, e), True)
 
 class Get_Lang:
     @classmethod
@@ -37,7 +39,7 @@ class Get_Lang:
                     json.dump(Lang, f, indent=4)
                     f.close()
             except Exception as e:
-                Log(50, 'Error in file GetLang.py\nError: {0}'.format(e))
+                _log.Critical('Error in file GetLang.py\nError: {0}'.format(e))
                 Lang = {'Lang': 'English'}
 
         try:
@@ -45,22 +47,22 @@ class Get_Lang:
                 self.file_lang: dict = json.load(f)
                 f.close()
         except FileNotFoundError:
-            Log(20, 'File {0}.json download'.format(Lang.get('Lang')))
+            _log.Info('File {0}.json download'.format(Lang.get('Lang')))
             os.makedirs('{0}/Bot/Language/'.format(path), 777, True)
             f = open('{0}/Bot/Language/{1}'.format(path, str(Lang.get('Lang'))+'.json'), 'wb+')
             with session.get('https://raw.githubusercontent.com/Romaindu74/Bots/main/Language/{0}'.format(str(Lang.get('Lang'))+'.json')) as r:
                 try:
                     f.write(r.content)
                 except Exception as e:
-                    Log(50, "An error occurred in file {0}\nError: {1}".format(__file__, e))
+                    _log.Critical("An error occurred in file {0}\nError: {1}".format(__file__, e))
                     return False
                 f.close()
-            Log(20, 'Download completed')
+            _log.Info('Download completed')
 
             with open('{0}/Bot/Language/{1}.json'.format(path, Lang.get('Lang', 'English')), 'r', encoding="utf-8") as f:
                 self.file_lang = json.load(f);f.close();del f
         except Exception as e:
-            Log(50, 'Error in file GetLang.py\nError: {0}'.format(e), True)
+            _log.Critical('Error in file GetLang.py\nError: {0}'.format(e), True)
             return False
 
         session.close()
@@ -85,7 +87,7 @@ class Get_User_Lang:
                     json.dump(self.main_file, f, indent=4);f.close();del f
             except Exception as e:
                 self.main_file = {'Lang': 'English'}
-                Log(50, 'Error in file GetLang.py\nError: {0}'.format(e))
+                _log.Critical('Error in file GetLang.py\nError: {0}'.format(e))
         else:
             self.main_file = {"Lang": Lang}
 

@@ -2,7 +2,7 @@ import datetime
 import colorama
 import sys
 
-from typing import Union
+from typing import Union, Optional
 
 colorama.init(True)
 
@@ -41,7 +41,8 @@ _nameToColor = {
 }
 
 class Logger:
-    def __init__(self) -> None:
+    def __init__(self, name: Optional[str] = __name__) -> None:
+        self.file        = name
         self.time_format = '%Y-%m-%d %H:%M:%S'
 
     def getLevel(self, level: Union[str, int]) -> str:
@@ -72,16 +73,18 @@ class Logger:
 
         level = self.getLevel(level)
 
-        file.write('[{0}] [{1}] {2}\n'.format(
+        file.write('[{0}] [{1}] [{2}] {3}\n'.format(
                 self.time(),
+                (self.file + ((20 - len(self.file)) * ' ')),
                 level + (max - len(level)) * ' ',
                 str(text)
             ))
         file.close()
 
     def _print(self, text: str, level: int, *args, **kwargs) -> None:
-        context = '[{0}] [{1}] {2}'.format(
+        context = '[{0}] [{1}] [{2}] {3}'.format(
                 self.time(),
+                (self.file + ((20 - len(self.file)) * ' ')),
                 self.status(level),
                 str(text)
             )

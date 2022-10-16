@@ -1,22 +1,24 @@
 from .GetLang import Get_Lang
-from .Logger  import Log
+from .Logger  import Logger
 
 from typing   import Union
+
+_log = Logger(__name__)
 
 try:
     import discord
     from discord.ext import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 try:
     import json
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'json'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'json'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 class _MissingSentinel:
     __slots__ = ()
@@ -50,7 +52,7 @@ def Save(path: str = MISSING, obj: dict = MISSING) -> bool:
             f.close()
         return True
     except Exception as e:
-        Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+        _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
         return False
 
 def Open(path: str = MISSING, __defalts: dict = {}) -> dict:
@@ -68,7 +70,7 @@ def Open(path: str = MISSING, __defalts: dict = {}) -> dict:
             f.close()
         return __defalts
     except Exception as e:
-        Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+        _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
         return False
 
 

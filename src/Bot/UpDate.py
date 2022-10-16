@@ -3,7 +3,7 @@ from typing import Union
 from time     import monotonic
 from typing   import Union
 from zipfile  import ZipFile
-from .Logger  import Log
+from .Logger  import Logger
 from .Utils   import decimal
 from pip._internal.exceptions import *
 
@@ -16,6 +16,8 @@ import json
 import pip
 import os
 
+_log = Logger(__name__)
+
 class UpDate:
     URL     = 'https://raw.githubusercontent.com/Romaindu74/Bots/main/{Name}.{ext}'
     Session = Session()
@@ -23,12 +25,14 @@ class UpDate:
 
     def Start(self) -> bool:
         if not self.Modules():
-            Log(40, 'Une erreur est survenue lors de la verification des modules')
+            _log.Error('Une erreur est survenue lors de la verification des modules')
             return False
 
+        _log.Info('Verification des mise a jour')
         if not self.File():
-            Log(40, 'Une erreur est survenue lors du telechargement des fichier')
+            _log.Error('Une erreur est survenue lors du telechargement des fichier')
             return False
+        _log.Info('Verification terminer')
 
         return True
 
@@ -36,19 +40,19 @@ class UpDate:
         try:
             request = self.Session.get(self.URL.format(Name = url, ext = ext), stream=stream)
         except exceptions.HTTPError as error:
-            Log(50, f"Request: {url}\nHttp Error: {error}")
+            _log.Critical(f"Request: {url}\nHttp Error: {error}")
         except exceptions.ConnectionError as error:
-            Log(50, f"Request: {url}\nError Connecting: {error}")
+            _log.Critical(f"Request: {url}\nError Connecting: {error}")
         except exceptions.Timeout as error:
-            Log(50, f"Request: {url}\nTimeout Error: {error}")
+            _log.Critical(f"Request: {url}\nTimeout Error: {error}")
         except exceptions.RequestException as error:
-            Log(50, f"Request: {url}\nError: {error}")
+            _log.Critical(f"Request: {url}\nError: {error}")
         else:
             return request
         return None
 
     def Modules(self) -> bool:
-        Log(20, 'Recuperation des modules requis')
+        _log.Info('Recuperation des modules requis')
         request = self.send('Modules')
         if request is None:
             return False
@@ -58,7 +62,7 @@ class UpDate:
         except exceptions.JSONDecodeError:
             return False
         else:
-            Log(20, 'Instalation des modules')
+            _log.Info('Instalation des modules')
             for module in modules:
                 try:
                     __import__(module)
@@ -66,16 +70,14 @@ class UpDate:
                     try:
                         pip.main(['install', module])
                     except DistributionNotFound:
-                        Log(30, f'Module {module} is not found')
+                        _log.Warn(f'Module {module} is not found')
                     except BestVersionAlreadyInstalled:
                         pass
-            Log(20, 'Instalation des modules fini')
+            _log.Info('Instalation des modules fini')
             return True
-        Log(50, 'Un erreur est survenu')
-        return False
 
     def File(self) -> bool:
-        Log(20, 'Recuperation de la derniere version')
+        _log.Info('Recuperation de la derniere version')
         request = self.send('Version')
 
         if request is None:
@@ -88,24 +90,24 @@ class UpDate:
         else:
             version: str  = version.get('Version', '0.0.0.0')[-1]
 
-        Log(20, 'Version trouvé: {0}'.format(version))
+        _log.Info('Version trouvé: {0}'.format(version))
 
         try:
             with open('{0}/User/__Json__/Main.json'.format(self.Path), 'r') as f:
-                self.main = json.load(f)
+                self.main: dict[str, str] = json.load(f)
                 f.close()
         except FileNotFoundError:
-            bot_version = '0.0.0.0'
-        else:
-            bot_version = self.main.get('Version', '0.0.0.0')
+            self.main = {'Version': '0.0.0.0'}
+
+        bot_version = self.main.get('Version', '0.0.0.0')
 
         if version == bot_version:
-            Log(20, 'Les version coresponde')
+            _log.Info('Les version coresponde')
             return True
 
-        Log(20, 'Lancement de l\'instalation')
+        _log.Info('Lancement de l\'instalation')
         request = self.send(f'V {version}', 'zip', True)
-        f = open(f'V {version}.zip', 'wb')
+        f = open(f'V {version}.file', 'wb')
 
         block = 1024 * 512
         size  = int(request.headers.get('content-length'))
@@ -129,10 +131,10 @@ class UpDate:
         f.close()
         print('\n')
 
-        Log(20, 'Telechargement fini en {0}s'.format(round(monotonic() - time, 2)))
-        Log(20, 'Decompilation')
+        _log.Info('Telechargement fini en {0}s'.format(round(monotonic() - time, 2)))
+        _log.Info('Decompilation')
 
-        with ZipFile(f'V {version}.zip', 'r') as obj_zip:
+        with ZipFile(f'V {version}.file', 'r') as obj_zip:
             Files = obj_zip.namelist()
             for File in Files:
                 if File.find('.') < 0:
@@ -145,14 +147,19 @@ class UpDate:
                             file.write(line)
                     file.close()
 
-        os.remove(f'V {version}.zip')
-        Log(20, 'l\'installation a été terminé avec succès')
+        os.remove(f'V {version}.file')
+        _log.Info('l\'installation a été terminé avec succès')
 
+        self.main['Version'] = version
+
+        os.makedirs('{0}/User/__Json__/'.format(self.Path), 777, True)
         try:
-            with open('{0}/User/__Json__/Main.json'.format(self.Path), 'r') as f:
+            with open('{0}/User/__Json__/Main.json'.format(self.Path), 'w') as f:
                 json.dump(self.main, f, ident = 4)
                 f.close()
         except FileNotFoundError:
-            bot_version = '0.0.0.0'
+            with open('{0}/User/__Json__/Main.json'.format(self.Path), 'w+') as f:
+                json.dump(self.main, f, ident = 4)
+                f.close()
 
         return True

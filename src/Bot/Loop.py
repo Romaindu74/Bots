@@ -6,28 +6,34 @@ import threading
 from time    import monotonic, sleep
 from asyncio import coroutines
 
-from .Logger   import Log
+from .Logger   import Logger
 from .type.Bot import Bot
 from .Utils    import Save, Open
+
+_log = Logger(__name__)
 
 class Loop:
     def __init__(self, Bot: Bot) -> None:
         self.Bot = Bot
-
         self.proccess: _Loop = None
 
     def start(self) -> bool:
+        _log.Info('Demarage de la boucle principale')
         self.proccess = _Loop(self.Bot)
         self.proccess.start()
 
+        _log.Info('La boucle principale a démarer')
         return self.proccess.Ok
 
     def stop(self) -> bool:
         try:
+            _log.Info('Extainction de la boucle principale')
             self.proccess.stop = True
         except Exception:
+            _log.Error('La boucle principale n\'a pas reussi a s\'arreter')
             return False
         else:
+            _log.Info('La boucle principale est etainte')
             self.proccess = None
             return True
 
@@ -86,6 +92,6 @@ class _Loop(threading.Thread):
 
                                     self._await(_user.send(embed=discord.Embed(title = 'Tu a été demute du serveur {0}'.format(_guild.name))))
             except Exception as e:
-                Log(50, e)
+                _log.Error('La boucle principale a rencontré un probleme\nErreur {0}'.format(e))
 
             sleep(1)

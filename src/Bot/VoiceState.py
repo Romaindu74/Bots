@@ -1,48 +1,44 @@
 from typing      import Union
 from .GetLang    import Get_Lang, Get_User_Lang
-from .Logger     import Log
+from .Logger     import Logger
 from .Utils      import send
 from .type.Bot   import Bot
 from .YTDLSource import YTDLSource
 
 import math
 import random
+import asyncio
+
+_log = Logger(__name__)
 
 try:
     import discord
     from discord.ext import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-try:
-    import asyncio
-except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'asyncio'), True)
-except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 try:
     from async_timeout import timeout
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'async_timeout'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'async_timeout'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 try:
     import functools
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'functools'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'functools'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 try:
     import youtube_dl
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'youtube_dl'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'youtube_dl'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 __all__ = (
     'VoiceState'
@@ -137,12 +133,14 @@ class VoiceState:
                 break
 
             except Exception as e:
-                Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
 
             else:
                 if self.is_playing and self.current != None:
                     self.current.source.volume = self.volume
                     self.voice.play(self.current.source)
+
+                    
 
                     if not self.loop:
                         await send(self.ctx, embed=self.current.create_embed(self.ctx.author.id), reference=False)
@@ -180,10 +178,10 @@ class VoiceState:
 
         try:
             destination = ctx.author.voice.channel
-            self.voice = await destination.connect(self_mute=True)
+            self.voice = await destination.connect(self_deaf=True)
             return True
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
     async def _leave(self) -> bool:
@@ -199,7 +197,7 @@ class VoiceState:
             self.audio_task.cancel()
             return True
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
     async def _play(self, ctx: commands.Context, search: str) -> None:
@@ -264,7 +262,7 @@ class VoiceState:
 
             return True
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
     async def _stop(self):
@@ -280,7 +278,7 @@ class VoiceState:
 
             return True
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
     async def _queue(self, ctx: commands.Context, page: int):
@@ -347,7 +345,7 @@ class VoiceState:
             self.voice.pause()
             return True
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
     async def _resume(self):
@@ -356,7 +354,7 @@ class VoiceState:
                 self.voice.resume()
             return True
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
     async def _shuffle(self):
@@ -364,7 +362,7 @@ class VoiceState:
             random.shuffle(self.songs)
             return True
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
             return False
 
     async def _remove(self, ctx: commands.Context, index: int):
@@ -382,7 +380,7 @@ class VoiceState:
         except asyncio.TimeoutError:
             await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
         except Exception as e:
-            Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
         else:
             await message.clear_reactions()
 

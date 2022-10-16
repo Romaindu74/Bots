@@ -1,15 +1,17 @@
 from .GetLang import Get_Lang, Get_User_Lang
-from .Logger  import Log
+from .Logger  import Logger
 from .Utils   import send
 from .type.Options import Options
+
+_log = Logger(__name__)
 
 try:
     import discord
     from discord.ext import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 import asyncio
 import functools
@@ -17,9 +19,9 @@ import functools
 try:
     import youtube_dl
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'youtube_dl'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'youtube_dl'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -45,7 +47,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
     FFMPEG_OPTIONS = {
         'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-        'options': '-vn g=120 lag-in-frames=25 deadline=good cpu-used=0 vprofile=1 qmax=51 qmin=11 slices=4 b=2M maxrate=24M minrate=100k auto-alt-ref=1 arnr-maxframes=7 arnr-strength=5 arnr-type=centered',
+        'options': '-vn',
     }
 
     ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
