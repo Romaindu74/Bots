@@ -117,7 +117,7 @@ class Instalateur:
             return False
 
         try:
-            modules = request.json()
+            modules: dict[str, str] = request.json()
         except exceptions.JSONDecodeError:
             return False
         else:
@@ -127,7 +127,7 @@ class Instalateur:
                     __import__(module)
                 except ImportError:
                     try:
-                        pip.main(['install', module])
+                        pip.main(['install', modules[module]])
                     except DistributionNotFound:
                         Log(30, f'Module {module} is not found')
                     except BestVersionAlreadyInstalled:
