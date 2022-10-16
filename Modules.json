@@ -4,5 +4,5 @@
     "youtube_dl": "youtube_dl",
     "requests": "requests",
     "colorama": "colorama",
-    "PyNaCl": "PyNaCl"
+    "nacl": "PyNaCl"
 }
