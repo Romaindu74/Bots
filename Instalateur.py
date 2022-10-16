@@ -211,6 +211,15 @@ class Instalateur:
         os.remove(f'V {version}.zip')
         Log(20, 'l\'installation a été terminé avec succès')
 
+        try:
+            os.makedirs('{0}/User/__Json__/'.format(self.Path), 777, True)
+            with open('{0}/User/__Json__/Main.json'.format(self.Path), 'w+') as f:
+                json.dump({'Version': version, 'Lang': 'English'}, f, indent=4)
+                f.close()
+        except Exception as e:
+            Log(50, str(e))
+            return False
+
         return True
 
 if __name__ == '__main__':
