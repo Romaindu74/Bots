@@ -1,19 +1,17 @@
-from ..GetLang import Get_Lang, Get_User_Lang
-from ..type.Bot import Bot
-from ..Logger  import Log
-from ..Utils   import send, Open, Save
+from ..GetLang          import Code, Get_User_Lang
+from ..Utils            import send, Open, Save
+from ..Logger           import Logger
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Prefix(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -23,7 +21,7 @@ class Prefix(commands.Cog):
     async def _check(slef, ctx: commands.Context) -> bool:
         if not ctx.author.bot:
             if not (ctx.guild):
-                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.9.3"))
+                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.2.2"))
                 return False
             return True
         else:
@@ -39,7 +37,7 @@ class Prefix(commands.Cog):
     async def _new_prefix(self, ctx: commands.Context, *, prefix: str = False) -> None:
         if await self._check(ctx):
             if not prefix:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.9"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.2.3"))
                 return False
 
             Guild = Open('{0}/{1}/Main.json'.format(self.path, ctx.guild.id))
@@ -51,7 +49,7 @@ class Prefix(commands.Cog):
                 Guild['Prefix'].append(prefix)
 
             Save('{0}/{1}/Main.json'.format(self.path, ctx.guild.id), Guild)
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.1.0.0").format(Prefix = prefix))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.2.4").format(prefix = prefix))
 
     @commands.command(
         name = "remove-prefix",
@@ -64,7 +62,7 @@ class Prefix(commands.Cog):
     async def _remove_prefix(self, ctx: commands.Context, *, prefix: str = False) -> None:
         if await self._check(ctx):
             if not prefix:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.9"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.2.3"))
                 return False
 
             Guild = Open('{0}/{1}/Main.json'.format(self.path, ctx.guild.id))
@@ -76,7 +74,7 @@ class Prefix(commands.Cog):
                 Guild['Prefix'].remove(prefix)
 
             Save('{0}/{1}/Main.json'.format(self.path, ctx.guild.id), Guild)
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.1.0.1").format(Prefix = prefix))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.2.5").format(prefix = prefix))
 
     @commands.command(
         name = "view-prefix",
@@ -100,24 +98,28 @@ class Prefix(commands.Cog):
             for prefix in Guild.get('Prefix'):
                 index += 1
                 if ((page - 1)*20) < index < ((page*20)):
-                    value += '({0})-{1}: `{2}`\n'.format(index, Get_User_Lang(ctx.author.id).get("0.0.1.0.2"), prefix)
+                    value += '({0})-{1}: `{2}`\n'.format(index, Get_User_Lang(ctx.author.id).get("0.0.0.2.6"), prefix)
 
             if value == '':
-                value = Get_User_Lang(ctx.author.id).get("0.0.1.0.3")
+                value = Get_User_Lang(ctx.author.id).get("0.0.0.2.7")
 
-            embed.add_field(name = Get_User_Lang(ctx.author.id).get("0.0.1.0.4"), value = value, inline = False)
+            embed.add_field(name = Get_User_Lang(ctx.author.id).get("0.0.0.2.8"), value = value, inline = False)
 
             pages = int(len(Guild.get('Prefix'))/20)
             if (len(Guild.get('Prefix'))/20) >= 0.1:
                 pages += 1
             
-            embed.set_footer(text = Get_User_Lang(ctx.author.id).get("0.0.0.4.5").format(Page = page, Pages = pages))
+            embed.set_footer(text = Get_User_Lang(ctx.author.id).get("0.0.0.2.9").format(page = page, pages = pages))
             await send(ctx, embed = embed)
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Prefix(Bot)
     try:
-        await Bot.Client.add_cog(Prefix(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

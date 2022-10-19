@@ -1,7 +1,7 @@
-from .GetLang import Get_Lang, Get_User_Lang
-from .Logger  import Logger
-from .Utils   import send
-from .type.Options import Options
+from .GetLang       import Code, Get_User_Lang
+from .type.Options  import Options
+from .Logger        import Logger
+from .Utils         import send
 
 _log = Logger(__name__)
 
@@ -9,9 +9,9 @@ try:
     import discord
     from discord.ext import commands
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Error(Code('0.0.0.0.0').format(Module = 'discord'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 import asyncio
 import functools
@@ -19,9 +19,9 @@ import functools
 try:
     import youtube_dl
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'youtube_dl'), True)
+    _log.Error(Code('0.0.0.0.0').format(Module = 'youtube_dl'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -82,7 +82,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
         data = await loop.run_in_executor(None, partial)
 
         if data is None:
-            await send(ctx, Get_User_Lang(ctx.author.id).get('0.0.0.5.4').format(Search = search), reference=False)
             return None
 
         if 'entries' not in data:
@@ -95,7 +94,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
                     break
 
             if process_info is None:
-                await send(ctx, Get_User_Lang(ctx.author.id).get('0.0.0.5.4').format(Search = search), reference=False)
                 return None
 
         webpage_url = process_info['webpage_url']
@@ -103,7 +101,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
         processed_info = await loop.run_in_executor(None, partial)
 
         if processed_info is None:
-            await send(ctx, Get_User_Lang(ctx.author.id).get('0.0.0.5.5').format(Webpage_url = webpage_url), reference=False)
             return None
 
         if 'entries' not in processed_info:
@@ -114,7 +111,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
                 try:
                     info = processed_info['entries'].pop(0)
                 except IndexError:
-                    await send(ctx, Get_User_Lang(ctx.author.id).get('0.0.0.5.6').format(Webpage_url = webpage_url), reference=False)
                     return None
 
         return cls(ctx, discord.FFmpegPCMAudio(info['url'], **cls.FFMPEG_OPTIONS, executable = "{0}/Bot/ffmpeg.exe".format(options.Path)), data=info)
@@ -127,12 +123,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         _duration = []
         if days > 0:
-            _duration.append('{0} {1}'.format(days, Get_User_Lang(user_id).get('0.0.0.5.7')))
+            _duration.append('{0} {1}'.format(days, Get_User_Lang(user_id).get('0.0.2.8.4')))
         if hours > 0:
-            _duration.append('{0} {1}'.format(hours, Get_User_Lang(user_id).get('0.0.0.5.8')))
+            _duration.append('{0} {1}'.format(hours, Get_User_Lang(user_id).get('0.0.2.8.5')))
         if minutes > 0:
-            _duration.append('{0} {1}'.format(minutes, Get_User_Lang(user_id).get('0.0.0.5.9')))
+            _duration.append('{0} {1}'.format(minutes, Get_User_Lang(user_id).get('0.0.2.8.6')))
         if seconds > 0:
-            _duration.append('{0} {1}'.format(seconds, Get_User_Lang(user_id).get('0.0.0.6.0')))
+            _duration.append('{0} {1}'.format(seconds, Get_User_Lang(user_id).get('0.0.2.8.7')))
 
         return ', '.join(_duration)

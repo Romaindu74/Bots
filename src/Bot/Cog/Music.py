@@ -1,19 +1,18 @@
-from ..GetLang    import Get_Lang, Get_User_Lang
-from ..type.Bot   import Bot
-from ..Logger     import Log
-from ..Utils      import send
+from ..GetLang          import Code, Get_User_Lang
+from ..VoiceState       import VoiceState
+from ..Logger           import Logger
+from ..Utils            import send
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Music(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -26,7 +25,6 @@ class Music(commands.Cog):
     def get_voice_state(self, ctx: commands.Context) -> None:
         voice_states = self._guilds.get(str(ctx.guild.id), False)
         if not voice_states:
-            from ..VoiceState import VoiceState
             voice_states = VoiceState(self.Bot, ctx)
             self._guilds[str(ctx.guild.id)] = voice_states
 
@@ -39,14 +37,14 @@ class Music(commands.Cog):
     async def _check(self, ctx: commands.Context) -> bool:
         if not ctx.author.bot:
             if not ctx.author.voice or not ctx.author.voice.channel:
-                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.9.1"))
+                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.7.3"))
                 return False
             elif ctx.voice_client:
                 if ctx.voice_client.channel != ctx.author.voice.channel:
-                    await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.9.2"))
+                    await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.7.4"))
                     return False
             elif not (ctx.guild):
-                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.9.3"))
+                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.2.2"))
                 return False
             return True
         else:
@@ -116,7 +114,7 @@ class Music(commands.Cog):
     async def _loop(self, ctx: commands.Context) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             if await self.voice_state._loop():
@@ -138,7 +136,7 @@ class Music(commands.Cog):
     async def _stop(self, ctx: commands.Context) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             if await self.voice_state._stop():
@@ -159,7 +157,7 @@ class Music(commands.Cog):
     async def _queue(self, ctx: commands.Context, *, page: int = 1) -> bool:
         if await self._check(ctx):
             if self.voice_state.songs == []:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.9.5'))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.7.6'))
                 return False
 
             await self.voice_state._queue(ctx, page)
@@ -176,7 +174,7 @@ class Music(commands.Cog):
     async def _skip(self, ctx: commands.Context) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             await self.voice_state._skip(ctx)
@@ -190,7 +188,7 @@ class Music(commands.Cog):
     async def _volume(self, ctx: commands.Context, *, volume: float = False) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             await self.voice_state._volume(ctx, volume)
@@ -204,7 +202,7 @@ class Music(commands.Cog):
     async def _pause(self, ctx: commands.Context) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             if await self.voice_state._pause():
@@ -226,7 +224,7 @@ class Music(commands.Cog):
     async def _resume(self, ctx: commands.Context) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             if await self.voice_state._resume():
@@ -246,11 +244,11 @@ class Music(commands.Cog):
     async def _shuffle(self, ctx: commands.Context) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             if len(self.voice_state.songs) == 0:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.5"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.6"))
                 return False
 
             if await self.voice_state._shuffle():
@@ -270,19 +268,19 @@ class Music(commands.Cog):
     async def _remove(self, ctx: commands.Context, index: int = False) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             if len(self.voice_state.songs) == 0:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.5"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.6"))
                 return False
 
             if index == False:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.9.6'))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.7.7'))
                 return False
 
             if index < 1 or len(self.voice_state.songs) < index:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.9.7').format(Max = len(self.voice_state.songs)))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.7.8').format(max = len(self.voice_state.songs)))
                 return False
 
             await self.voice_state._remove(ctx, index)
@@ -297,12 +295,12 @@ class Music(commands.Cog):
     async def _forceskip(self, ctx: commands.Context) -> bool:
         if await self._check(ctx):
             if self.voice_state.is_playing:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.9.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.7.5"))
                 return False
 
             permition: discord.permissions = ctx.author.guild_permissions
             if not permition.manage_guild:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.8.0"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.1.1"))
                 return False
 
             await ctx.message.add_reaction('⏭')
@@ -310,9 +308,13 @@ class Music(commands.Cog):
             self.voice_state.voice.stop()
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Music(Bot)
     try:
-        await Bot.Client.add_cog(Music(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

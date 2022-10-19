@@ -1,28 +1,20 @@
-from ..GetLang import Get_Lang, Get_User_Lang
-from ..type.Bot import Bot
-from ..Logger  import Log
-from ..Utils   import send, Open, Save
+from ..GetLang          import Code, Get_User_Lang
+from ..Utils            import send, Open, Save
+from ..Logger           import Logger
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 import math
-
-try:
-    import asyncio
-except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'asyncio'), True)
-except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+import asyncio
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Status(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -36,7 +28,7 @@ class Status(commands.Cog):
         if str(ctx.author.id) in self.Bot.Info.get('Owner', []):
             return True
         elif not ctx.author.bot:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.8.0'))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.1.1'))
             return False
 
     @commands.command(
@@ -54,7 +46,7 @@ class Status(commands.Cog):
             def message_check(_message: discord.Message):
                 return _message.author == ctx.author and _message.channel == ctx.channel
 
-            message = await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.1.1.8").format(Name = ctx.author), description = Get_User_Lang(ctx.author.id).get('0.0.1.1.9')))
+            message = await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.0.3.6").format(user = ctx.author), description = Get_User_Lang(ctx.author.id).get('0.0.0.3.7')))
 
             await message.add_reaction('✅')
             await message.add_reaction('❌')
@@ -62,24 +54,24 @@ class Status(commands.Cog):
             try:
                 reaction, user = await self.client.wait_for('reaction_add', check = reaction_check, timeout = 300)
             except asyncio.TimeoutError:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.3.8'))
             except Exception as e:
-                Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             else:
                 await message.clear_reactions()
 
                 if str(reaction.emoji) == '❌':
                     return
                 if str(reaction.emoji) == '✅':
-                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.1.2.0'), description = Get_User_Lang(ctx.author.id).get('0.0.1.2.1')))
+                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.3.9'), description = Get_User_Lang(ctx.author.id).get('0.0.0.4.0')))
                     
                     try:
                         reponse = await self.client.wait_for('message', check = message_check, timeout = 300)
                     except asyncio.TimeoutError:
-                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.3.8'))
                         return
                     except Exception as e:
-                        Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                        _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                         return
                     else:
                         try:
@@ -89,15 +81,15 @@ class Status(commands.Cog):
                             return
                         await reponse.delete()
 
-                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.1.2.2'), description = Get_User_Lang(ctx.author.id).get('0.0.1.2.3')))
+                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.4.1'), description = Get_User_Lang(ctx.author.id).get('0.0.0.4.2')))
 
                     try:
                         reponse = await self.client.wait_for('message', check = message_check, timeout = 300)
                     except asyncio.TimeoutError:
-                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.3.8'))
                         return
                     except Exception as e:
-                        Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                        _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                         return
                     else:
                         _statu = str(reponse.content)
@@ -106,15 +98,15 @@ class Status(commands.Cog):
                             return
                         await reponse.delete()
 
-                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.1.2.4')))
+                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.4.3')))
 
                     try:
                         reponse = await self.client.wait_for('message', check = message_check, timeout = 300)
                     except asyncio.TimeoutError:
-                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.3.8'))
                         return
                     except Exception as e:
-                        Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                        _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                         return
                     else:
                         try:
@@ -124,15 +116,15 @@ class Status(commands.Cog):
                             return
 
                     await reponse.delete()
-                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.1.2.5')))
+                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.4.4')))
 
                     try:
                         reponse = await self.client.wait_for('message', check = message_check, timeout = 300)
                     except asyncio.TimeoutError:
-                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.3.8'))
                         return
                     except Exception as e:
-                        Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                        _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                         return
                     else:
                         text = str(reponse.content)
@@ -147,7 +139,7 @@ class Status(commands.Cog):
 
                     Save("{0}/Status.json".format(self.path), status)
 
-                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.1.2.6")))
+                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.0.4.5")))
 
     @commands.command(
         name = "view-status",
@@ -168,7 +160,7 @@ class Status(commands.Cog):
                 pages = math.ceil(len(status["Status"]) / items_per_page)
                 start = (page - 1) * items_per_page
                 end = start + items_per_page
-                embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.1.2.7"), color=ctx.author.color)
+                embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.0.4.6"), color=ctx.author.color)
 
                 for i in range(start, end):
                     try:
@@ -177,17 +169,17 @@ class Status(commands.Cog):
                             status["Status"][i]["Sleep"],
                             status["Status"][i]["Status"],
                             status["Status"][i]["Type"],
-                            Value =  Get_User_Lang(ctx.author.id).get("0.0.1.2.8"),
-                            Sleep =  Get_User_Lang(ctx.author.id).get("0.0.1.2.9"),
-                            Status = Get_User_Lang(ctx.author.id).get("0.0.0.2.4"),
-                            Type =   Get_User_Lang(ctx.author.id).get("0.0.1.3.0")
+                            Value =  Get_User_Lang(ctx.author.id).get("0.0.0.4.7"),
+                            Sleep =  Get_User_Lang(ctx.author.id).get("0.0.0.4.8"),
+                            Status = Get_User_Lang(ctx.author.id).get("0.0.0.4.9"),
+                            Type =   Get_User_Lang(ctx.author.id).get("0.0.0.5.0")
                         ),inline = False)
                     except IndexError:
                         pass
-                embed.set_footer(text = Get_User_Lang(ctx.author.id).get("0.0.0.4.5").format(Page = page, Pages = pages))
+                embed.set_footer(text = Get_User_Lang(ctx.author.id).get("0.0.0.2.9").format(page = page, pages = pages))
                 await send(ctx, embed=embed)
             else:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.1.3.4"))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.5.1"))
 
 
     @commands.command(
@@ -205,7 +197,7 @@ class Status(commands.Cog):
             def message_check(_message: discord.Message):
                 return _message.author == ctx.author and _message.channel == ctx.channel
 
-            message = await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.1.1.8').format(Name = ctx.author), description = Get_User_Lang(ctx.author.id).get('0.0.1.3.1')))
+            message = await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.3.6').format(user = ctx.author), description = Get_User_Lang(ctx.author.id).get('0.0.0.5.2')))
 
             await message.add_reaction('✅')
             await message.add_reaction('❌')
@@ -213,10 +205,10 @@ class Status(commands.Cog):
             try:
                 reaction, user = await self.client.wait_for('reaction_add', check = reaction_check, timeout = 300)
             except asyncio.TimeoutError:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.3.8'))
                 return
             except Exception as e:
-                Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                 return
 
             await message.clear_reactions()
@@ -234,7 +226,7 @@ class Status(commands.Cog):
                     pages = math.ceil(len(status["Status"]) / items_per_page)
                     start = (page - 1) * items_per_page
                     end = start + items_per_page
-                    embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.1.2.7"), color=ctx.author.color)
+                    embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get("0.0.0.4.6"), color=ctx.author.color)
 
                     for i in range(start, end):
                         try:
@@ -243,23 +235,23 @@ class Status(commands.Cog):
                                 status["Status"][i]["Sleep"],
                                 status["Status"][i]["Status"],
                                 status["Status"][i]["Type"],
-                                Value =  Get_User_Lang(ctx.author.id).get("0.0.1.2.8"),
-                                Sleep =  Get_User_Lang(ctx.author.id).get("0.0.1.2.9"),
-                                Status = Get_User_Lang(ctx.author.id).get("0.0.0.2.4"),
-                                Type =   Get_User_Lang(ctx.author.id).get("0.0.1.3.0")
+                                Value =  Get_User_Lang(ctx.author.id).get("0.0.0.4.7"),
+                                Sleep =  Get_User_Lang(ctx.author.id).get("0.0.0.4.8"),
+                                Status = Get_User_Lang(ctx.author.id).get("0.0.0.4.9"),
+                                Type =   Get_User_Lang(ctx.author.id).get("0.0.0.5.0")
                             ),inline = False)
                         except IndexError:
                             pass
-                    embed.add_field(name = Get_User_Lang(ctx.author.id).get("0.0.1.3.2"), value = Get_User_Lang(ctx.author.id).get("0.0.1.3.3"))
-                    embed.set_footer(text = Get_User_Lang(ctx.author.id).get("0.0.0.4.5").format(Page = page, Pages = pages))
+                    embed.add_field(name = Get_User_Lang(ctx.author.id).get("0.0.0.5.3"), value = Get_User_Lang(ctx.author.id).get("0.0.0.5.4"))
+                    embed.set_footer(text = Get_User_Lang(ctx.author.id).get("0.0.0.2.9").format(page = page, pages = pages))
                     await message.edit(embed=embed)
                     try:
                         reponse = await self.client.wait_for("message", check = message_check, timeout = 300)
                     except asyncio.TimeoutError:
-                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.3.8'))
                         return
                     except Exception as e:
-                        Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                        _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                         return
                     await reponse.delete()
                     try:
@@ -274,14 +266,18 @@ class Status(commands.Cog):
 
                     del status["Status"][num-1]
                     Save("{0}/Status.json".format(self.path), status)
-                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.1.5')))
+                    await message.edit(embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.5.5')))
                 else:
-                    await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.1.3.4"))
+                    await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.5.1"))
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Status(Bot)
     try:
-        await Bot.Client.add_cog(Status(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

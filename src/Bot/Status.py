@@ -1,22 +1,21 @@
-from concurrent.futures import process
 from .Utils        import MISSING, Open, Save
 from .type.Bot     import Bot
 from .type.Options import Options
 from .Logger       import Logger
-from .GetLang      import Get_Lang
+from .GetLang      import Code
+
+_log = Logger(__name__)
 
 import asyncio
 import threading
 import tkinter as tk
 
-_log = Logger(__name__)
-
 try:
     import discord
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Error(Code('0.0.0.0.0').format(Module = 'discord'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 Types = [
     'Joue à',
@@ -48,35 +47,35 @@ class Status:
         self.ping_     = None
 
     def Interface(self, Activite: tk.Label, Statu: tk.Label, Time: tk.Label, Ping: tk.Label) -> None:
-        _log.Info('Definition de l\'interface')
+        _log.Info(Code('0.0.2.4.5'))
         self.activite_ = Activite
         self.statu_    = Statu
         self.time_     = Time
         self.ping_     = Ping
-        _log.Info('Definition de l\'interface fini')
+        _log.Info(Code('0.0.2.4.6'))
 
     def Start(self) -> None:
-        _log.Info('Status en cours de demarage')
+        _log.Info(Code('0.0.2.4.7'))
         process = Start(self.Bot, self.Options, self)
 
         process.start()
         self.proccess = process
-        _log.Info('Status demarer')
+        _log.Info(Code('0.0.2.4.8'))
 
     def Stop(self) -> None:
-        _log.Info('Extinction du status')
+        _log.Info(Code('0.0.2.4.9'))
         if self.proccess:
             self.proccess.stop()
         
         self.proccess = None
-        _log.Info('Status arreter')
+        _log.Info(Code('0.0.2.5.0'))
 
     def UpDate_Ping(self, ms: float = MISSING) -> None:
         ms = round(ms, 2)
         self.Bot.Ping = ms
         if self.proccess:
             if self.proccess.is_config and self.ping_:
-                self.ping_.config(text = Get_Lang.get('0.0.0.2.3').format(Ping = ms))
+                self.ping_.config(text = Code('0.0.1.8.0').format(ping = ms))
 
     @property
     def Activity(self) -> str:
@@ -178,13 +177,13 @@ class Start(threading.Thread):
 
                     except Exception as e:
                         if not self.stop_:
-                            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                            _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
 
                     else:
                         if self.main.activite_ and self.main.statu_ and self.is_config:
                             try:
-                                self.main.activite_.config(text = Get_Lang.get('0.0.0.2.5').format(Activity = Types[i.get("Type", 0)], Text = i.get("Text", "")))
-                                self.main.statu_.config(text    = Get_Lang.get('0.0.0.2.6').format(Display  = Status_[i.get("Status", "online")]))
+                                self.main.activite_.config(text = Code('0.0.1.8.2').format(activity = Types[i.get("Type", 0)], text = i.get("Text", "")))
+                                self.main.statu_.config(text    = Code('0.0.1.8.3').format(display  = Status_[i.get("Status", "online")]))
                             except:
                                 self.is_config = False
 
@@ -194,7 +193,7 @@ class Start(threading.Thread):
 
                             if self.main.time_ and self.is_config:
                                 try:
-                                    self.main.time_.config(text = Get_Lang.get('0.0.0.2.7').format(Time = (i.get('Sleep', 0)-1)-time))
+                                    self.main.time_.config(text = Code('0.0.1.8.4').format(time = (i.get('Sleep', 0)-1)-time))
                                 except:
                                     self.is_config = False
                             await asyncio.sleep(1)

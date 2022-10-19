@@ -1,21 +1,19 @@
-from ..GetLang  import Get_Lang, Get_User_Lang
-from ..type.Bot import Bot
-from ..Logger   import Log
-from ..Utils    import send, Open, Save
+from ..GetLang          import Get_User_Lang, Code
+from ..Utils            import send, Open, Save
+from ..Logger           import Logger
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 import os
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Help(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -51,7 +49,7 @@ class Help(commands.Cog):
                     try:
                         help = r.json()
                     except Exception as e:
-                        Log(50, "An error occurred in file {0}\nError: {1}".format(__file__, e), True)
+                        _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = e))
                         return False
 
                 if 'message' in help and 'code' in help:
@@ -61,7 +59,7 @@ class Help(commands.Cog):
                             try:
                                 help = r.json()
                             except Exception as e:
-                                Log(50, "An error occurred in file {0}\nError: {1}".format(__file__, e), True)
+                                _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = e))
                                 return False
 
                     else:
@@ -101,10 +99,14 @@ class Help(commands.Cog):
 
             await send(ctx, embed=Embed)
 
-async def setup(Bot: Bot):
+async def setup(Bot: Bot) -> bool:
+    _cog = Help(Bot)
     try:
-        await Bot.Client.add_cog(Help(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

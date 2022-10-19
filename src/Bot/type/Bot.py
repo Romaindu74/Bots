@@ -1,12 +1,11 @@
-from .Options   import Options   as _Options
-from .Status    import Status    as _Status
-from .Interface import Interface as _Interface
+from .Options       import Options   as _Options
+from .Status        import Status    as _Status
+from .Interface     import Interface as _Interface
 
-from discord.ext import commands
+from discord.ext    import commands
 
 import threading
 import discord
-
 
 class Bot(threading.Thread):
     Ping:         float

@@ -1,15 +1,16 @@
-import os
-import json
-from typing import Union
-
-from .Logger import Logger
+from .Logger                    import Logger
 
 _log = Logger(__name__)
 
+import os
+import json
+
+from typing                     import Union
+
 try:
-    from requests             import Session
+    from requests               import Session
 except ImportError:
-    from pip._vendor.requests import Session
+    from pip._vendor.requests   import Session
     _log.Critical('Module requests is not found', True)
 except Exception as e:
     _log.Critical("An error occurred in file {0}\nError: {1}".format(__file__, e), True)
@@ -97,3 +98,20 @@ class Get_User_Lang:
     @property
     def get_lang(self) -> str:
         return self.main_file.get('Lang', 'English')
+
+class Code:
+    def __init__(self, code: str = '', __default: str = False, **options) -> None:
+        self.code = Get_Lang.get(code, __default, **options)
+
+        if self.code == None:
+            self.code = ''
+
+    def __str__(self) -> str:
+        return self.code
+
+    def format(self, *args: str, **kwargs: str) -> str:
+        self.code = self.code.format(*args, **kwargs)
+        return self.code
+
+    def content(self) -> str:
+        return self.code

@@ -1,19 +1,16 @@
-from ..GetLang import Get_Lang, Get_User_Lang
-from ..type.Bot import Bot
-from ..Logger  import Log
-from ..Utils   import send
+from ..GetLang          import Code, Get_User_Lang
+from ..Logger           import Logger
+from ..Utils            import send
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 try:
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
-
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Ping(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -34,13 +31,17 @@ class Ping(commands.Cog):
         )
     async def _ping(self, ctx: commands.Context) -> None:
         if await self._check(ctx):
-            msg = await send(ctx, message = "{0} **{1} ms**".format(Get_User_Lang(ctx.author.id).get("0.0.0.9.8"), round(self.Bot.Client.latency * 1000)))
+            msg = await send(ctx, message = Get_User_Lang(ctx.author.id).get("0.0.0.2.1").format(ping = round(self.Bot.Client.latency * 1000)))
             await msg.add_reaction("🏓")
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Ping(Bot)
     try:
-        await Bot.Client.add_cog(Ping(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

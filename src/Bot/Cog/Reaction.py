@@ -1,20 +1,17 @@
-from ..Utils   import Open, Save
-from ..GetLang import Get_Lang
-from ..type.Bot import Bot
-from ..Logger  import Log
+from ..Utils            import Open, Save
+from ..Logger           import Logger
+from ..GetLang          import Code
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
-
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Reaction(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -79,9 +76,13 @@ class Reaction(commands.Cog):
                         await member.remove_roles(discord.utils.get(guild.roles, id=role.id))
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Reaction(Bot)
     try:
-        await Bot.Client.add_cog(Reaction(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

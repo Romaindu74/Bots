@@ -1,23 +1,21 @@
-from datetime import datetime
-from typing   import Union
-from time     import monotonic
+from ..Utils            import MISSING, send, Save, Open
+from ..GetLang          import Code, Get_User_Lang
+from ..Logger           import Logger
+from ..type.Bot         import Bot
 
-from ..GetLang  import Get_Lang
-from ..type.Bot import Bot
-from ..Logger   import Log
-from ..Utils    import MISSING, send, Save, Open
+_log = Logger(__name__)
+
+from datetime           import datetime
+from typing             import Union
+from time               import monotonic
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Moderations(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -37,15 +35,15 @@ class Moderations(commands.Cog):
     async def _ban(self, ctx: commands.Context, member: Union[int, discord.Member, discord.User] = MISSING, *, raison = None) -> None:
         if self._check(ctx):
             if member is MISSING:
-                await send(ctx, message = 'Tu n\'a pas mentionner le membre en question')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.9'))
                 return
 
             if not ctx.bot_permissions.ban_members:
-                await send(ctx, message= 'Le bot n\'a pas la permition de faire cela')
+                await send(ctx, message= Get_User_Lang(ctx.author.id).get('0.0.0.6.0'))
                 return
             
             if not ctx.author.guild_permissions.ban_members:
-                await send(ctx, message = 'Tu n\'a pas la permition de faire cela')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.1'))
                 return
 
             if isinstance(member, int):
@@ -57,9 +55,9 @@ class Moderations(commands.Cog):
             try:
                 await ctx.guild.ban(member, reason = raison)
             except discord.Forbidden:
-                await send(ctx, message = 'Je n\'ai pas reussi a bannir ce membre', reference=False)
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.2'), reference=False)
             else:
-                await send(ctx, embed=discord.Embed(title = '{0} a été Banni du serveur'.format(member.name), timestamp = datetime.now()))
+                await send(ctx, embed=discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.6.3').format(user = member.name), timestamp = datetime.now()))
 
     @commands.command(
         name = 'unban',
@@ -71,15 +69,15 @@ class Moderations(commands.Cog):
     async def _unban(self, ctx: commands.Context, member: Union[int, discord.Member, discord.User] = MISSING, *, raison = None) -> None:
         if self._check(ctx):
             if member is MISSING:
-                await send(ctx, message = 'Tu n\'a pas mentionner le membre en question')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.9'))
                 return
 
             if not ctx.bot_permissions.ban_members:
-                await send(ctx, message= 'Le bot n\'a pas la permition de faire cela')
+                await send(ctx, message= Get_User_Lang(ctx.author.id).get('0.0.0.6.0'))
                 return
             
             if not ctx.author.guild_permissions.ban_members:
-                await send(ctx, message = 'Tu n\'a pas la permition de faire cela')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.1'))
                 return
 
             if isinstance(member, int):
@@ -91,12 +89,11 @@ class Moderations(commands.Cog):
             try:
                 await ctx.guild.unban(member, reason=raison)
             except discord.Forbidden:
-                await send(ctx, message = 'Je n\'ai pas reussi a bannir ce membre', reference=False)
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.4'), reference=False)
             except discord.NotFound:
-                await send(ctx, message = 'Ce membre n\'es pas banni', reference=False)
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.5'), reference=False)
             else:
-                await send(ctx, embed=discord.Embed(title = '{0} n\'est plus banni du serveur'.format(member.name), timestamp = datetime.now()))
-
+                await send(ctx, embed=discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.6.6').format(user = member.name), timestamp = datetime.now()))
 
     @commands.command(
         name = 'kick',
@@ -110,15 +107,15 @@ class Moderations(commands.Cog):
     async def _kick(self, ctx: commands.Context, member: Union[int, discord.Member] = MISSING, *, raison = None) -> None:
         if self._check(ctx):
             if member is MISSING:
-                await send(ctx, message = 'Tu n\'a pas mentionner le membre en question')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.9'))
                 return
 
             if not ctx.bot_permissions.kick_members:
-                await send(ctx, message= 'Le bot n\'a pas la permition de faire cela')
+                await send(ctx, message= Get_User_Lang(ctx.author.id).get('0.0.0.6.0'))
                 return
             
             if not ctx.author.guild_permissions.kick_members:
-                await send(ctx, message = 'Tu n\'a pas la permition de faire cela')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.1'))
                 return
 
             if isinstance(member, int):
@@ -127,9 +124,9 @@ class Moderations(commands.Cog):
             try:
                 await member.kick(reason = raison)
             except discord.Forbidden:
-                await send(ctx, message = 'Je n\'ai pas reussi a expulser ce membre', reference=False)
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.7'), reference=False)
             else:
-                await send(ctx, embed=discord.Embed(title = '{0} a été expulser du serveur'.format(member.name), timestamp = datetime.now()))
+                await send(ctx, embed=discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.6.8').format(user = member.name), timestamp = datetime.now()))
 
 
     @commands.command(
@@ -144,15 +141,15 @@ class Moderations(commands.Cog):
     async def _mute(self, ctx: commands.Context, member: Union[int, discord.Member] = MISSING, *, raison = None) -> None:
         if self._check(ctx):
             if member is MISSING:
-                await send(ctx, message = 'Tu n\'a pas mentionner le membre en question')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.9'))
                 return
 
             if not ctx.bot_permissions.manage_roles or not ctx.bot_permissions.manage_channels:
-                await send(ctx, message= 'Le bot n\'a pas la permition de faire cela')
+                await send(ctx, message= Get_User_Lang(ctx.author.id).get('0.0.0.6.0'))
                 return
             
             if not ctx.author.guild_permissions.manage_roles or not ctx.bot_permissions.manage_channels:
-                await send(ctx, message = 'Tu n\'a pas la permition de faire cela')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.1'))
                 return
 
             if isinstance(member, int):
@@ -171,9 +168,9 @@ class Moderations(commands.Cog):
             try:
                 await member.add_roles(Role)
             except discord.Forbidden:
-                await send(ctx, message = 'Je n\'ai pas reussi a mute ce membre', reference=False)
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.9'), reference=False)
             else:
-                await send(ctx, embed=discord.Embed(title = '{0} a été mute du serveur'.format(member.name), timestamp = datetime.now()))
+                await send(ctx, embed=discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.7.0').format(user = member.name), timestamp = datetime.now()))
 
     @commands.command(
         name = 'tempmute',
@@ -184,19 +181,19 @@ class Moderations(commands.Cog):
     async def _tempmute(self, ctx: commands.Context, member: Union[int, discord.Member] = MISSING, temp: int = MISSING, *, raison = None) -> None:
         if self._check(ctx):
             if member is MISSING:
-                await send(ctx, message = 'Tu n\'a pas mentionner le membre en question')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.9'))
                 return
 
             if temp is MISSING:
-                await send(ctx, message = 'Tu n\'a pas donner un temp limite')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.7.1'))
                 return
 
             if not ctx.bot_permissions.manage_roles or not ctx.bot_permissions.manage_channels:
-                await send(ctx, message= 'Le bot n\'a pas la permition de faire cela')
+                await send(ctx, message= Get_User_Lang(ctx.author.id).get('0.0.0.6.0'))
                 return
             
             if not ctx.author.guild_permissions.manage_roles or not ctx.bot_permissions.manage_channels:
-                await send(ctx, message = 'Tu n\'a pas la permition de faire cela')
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.1'))
                 return
 
             if isinstance(member, int):
@@ -220,16 +217,18 @@ class Moderations(commands.Cog):
                 guild['Temps-Mute'][str(member.id)] = int(monotonic())+temp
                 Save('{0}/User/{1}/__Guilds__/{2}/Main.json'.format(self.Bot.Options.Path, self.Bot.Id, ctx.guild.id), guild)
             except discord.Forbidden:
-                await send(ctx, message = 'Je n\'ai pas reussi a mute ce membre', reference=False)
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.6.9'), reference=False)
             else:
-                await send(ctx, embed=discord.Embed(title = '{0} a été mute du serveur pandant {1}s'.format(member.name, temp), timestamp = datetime.now()))
-
-
+                await send(ctx, embed=discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.7.2').format(user = member.name, temps = temp), timestamp = datetime.now()))
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Moderations(Bot)
     try:
-        await Bot.Client.add_cog(Moderations(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

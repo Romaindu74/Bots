@@ -1,6 +1,6 @@
 from .Logger         import Logger
 from .AddCog         import AddCog
-from .GetLang        import Get_Lang
+from .GetLang        import Code
 
 from .type.Interface import Interface as _Interface
 from .type.Options   import Options   as _Options
@@ -20,10 +20,9 @@ try:
     import discord
     from discord.ext import commands
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Bot(threading.Thread):
     _initialized: bool = False
@@ -31,17 +30,17 @@ class Bot(threading.Thread):
 
     def __init__(self, Id: str = MISSING, Options: _Options = MISSING) -> None:
         super(Bot, self).__init__()
-        _log.Info(f'Initialisation du Bot {Id}')
-
         if Id == MISSING:
-            _log.Critical(Get_Lang.get('0.0.1.4.9').format(Error = Get_Lang.get('0.0.1.5.0')))
+            _log.Critical(Code('0.0.0.9.9').format(bot = Id, error = Code('0.0.1.0.0')))
             self._error = True
             return
 
         elif Options == MISSING:
-            _log.Critical(Get_Lang.get('0.0.1.4.9').format(Error = Get_Lang.get('0.0.1.5.1')))
+            _log.Critical(Code('0.0.0.9.9').format(bot = Id, error = Code('0.0.1.0.1')))
             self._error = True
             return
+
+        _log.Info(Code('0.0.1.0.4').format(bot = Id))
 
         self._event: int            = 0
         self._interface: _Interface = None
@@ -52,20 +51,20 @@ class Bot(threading.Thread):
         self._status: _Status       = _Status(self, self._options)
         self._loop: _Loop           = _Loop(self)
 
-        _log.Info('Recuperation des Information du bot')
+        _log.Info(Code('0.0.1.0.2'))
         if not os.path.exists('{0}/User/Bots/{1}/'.format(self._options.Path, self._id)):
             os.makedirs('{0}/User/Bots/{1}/'.format(self._options.Path, self._id), exist_ok = True)
 
         self._prefix: dict          = Open('{0}/User/Bots/{1}/Prefix.json'.format(self._options.Path, self._id), {'Prefix': ["!"]})
         self._info: dict            = Open('{0}/User/Bots/{1}/Main.json'.format(self._options.Path, self._id))
-        _log.Info('Recuperation terminé')
+        _log.Info(Code('0.0.1.0.3'))
 
-        self._status_: str          = '0.0.0.6.2'
+        self._status_: str          = '0.0.0.3.3'
         self._client: commands.Bot  = None
         self._ping: float           = 0.0
 
         self._initialized: bool     = True
-        _log.Info('Initialization Fini')
+        _log.Info(Code('0.0.1.0.5'))
 
     def run(self) -> None:
         while True:
@@ -77,47 +76,47 @@ class Bot(threading.Thread):
 
     async def _Start(self) -> None:
         if not self._initialized:
-            _log.Warn('Le bot n\'es pas initialiser')
+            _log.Warn(Code('0.0.1.0.6'))
             return
 
         if not self.Info.get('Token', False):
-            _log.Warn(Get_Lang.get('0.0.0.1.3'))
+            _log.Warn(Code('0.0.1.0.7'))
             return
 
         try:
-            _log.Info('Verification des intents')
+            _log.Info(Code('0.0.1.0.8'))
             self.Client = commands.Bot((self._prefix_), intents = discord.Intents.all())
         except discord.errors.PrivilegedIntentsRequired:
-            _log.Info('Intents manquante')
+            _log.Info(Code('0.0.1.0.9'))
             self.Client = commands.Bot((self._prefix_))
 
         if not await AddCog(self):
-            _log.Warn('Les modules n\'ont pas reussi a etre ajouter')
+            _log.Warn(Code('0.0.1.1.0'))
 
         try:
-            _log.Info('Lancement du module de status')
+            _log.Info(Code('0.0.1.1.1'))
             self.Status.Start()
         except Exception:
-            _log.Error('Le module de status n\'a pas reussi a etre lancer')
+            _log.Error(Code('0.0.1.1.2'))
         else:
-            _log.Info('Lancement du module de status reussi')
+            _log.Info(Code('0.0.1.1.3'))
     
         try:
-            _log.Info('Lancement de la boucle principale')
+            _log.Info(Code('0.0.1.1.4'))
             self._loop.start()
         except Exception:
-            _log.Error('La boucle principale n\'a pas reussi a etre lancer')
+            _log.Error(Code('0.0.1.1.5'))
         else:
-            _log.Info('Boucle principale Lancer')
+            _log.Info(Code('0.0.1.1.6'))
 
         try:
-            _log.Info('Demarage du bot')
+            _log.Info(Code('0.0.1.1.7'))
             await self.Client.start(self.Info.get('Token'))
         except KeyboardInterrupt:
-            _log.Critical(Get_Lang.get('0.0.1.4.6'))
+            _log.Critical(Code('0.0.1.1.8'))
             self.Client.loop.create_task(self.Client.close())
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+            _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
 
     def _prefix_(self, client: commands.Bot, message: discord.Message) -> list:
         _prefix: list = []
@@ -136,40 +135,40 @@ class Bot(threading.Thread):
         return _prefix
 
     def Stop(self) -> bool:
-        if self.Status == '0.0.0.6.2':
-            _log.Warn('Le bot est deja etain')
+        if self.Status == '0.0.0.3.3':
+            _log.Warn(Code('0.0.1.1.9'))
             return False
 
         if self.Client == None:
-            _log.Error('Le client n\'es pas defini')
+            _log.Error(Code('0.0.1.2.0'))
             return False
 
         try:
-            _log.Info('Arret du module de status')
+            _log.Info(Code('0.0.1.2.1'))
             self.Status.Stop()
         except Exception:
-            _log.Error('Le module de status n\'a pas reussi a etre arreter')
+            _log.Error(Code('0.0.1.2.2'))
         else:
-            _log.Info('Module status etain')
+            _log.Info(Code('0.0.1.2.3'))
     
         try:
-            _log.Info('Arret de la boucle principale')
+            _log.Info(Code('0.0.1.2.4'))
             self._loop.stop()
         except Exception:
-            _log.Error('La boucle principale n\'a pas reussi a etre arreter')
+            _log.Error(Code('0.0.1.2.5'))
         else:
-            _log.Info('Boucle principale Arreter')
+            _log.Info(Code('0.0.1.2.6'))
 
         try:
-            _log.Info('Arret de bot')
+            _log.Info(Code('0.0.1.2.7'))
             self.Client.loop.create_task(self.Client.close())
         except Exception:
-            _log.Info('Le bot n\'a pas reussi a s\'etaindre')
+            _log.Info(Code('0.0.1.2.8'))
             return False
         
         else:
-            _log.Info('Bot etain')
-            self.Status_ = '0.0.0.6.2'
+            _log.Info(Code('0.0.1.2.9'))
+            self.Status_ = '0.0.0.3.3'
             self.Interface.UpDate_Bot(self.Id)
             self.Client = None
 

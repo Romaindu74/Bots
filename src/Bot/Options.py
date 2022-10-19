@@ -1,21 +1,22 @@
-from .Utils     import Save, Open, MISSING
-from .GetLang   import Get_Lang
-from .Bot       import Bot as _Bots
-from .Logger    import Logger
-
-from typing     import Union
-
-import os
+from .Utils                     import Save, Open, MISSING
+from .GetLang                   import Code
+from .Bot                       import Bot as _Bots
+from .Logger                    import Logger
 
 _log = Logger(__name__)
 
+from typing                     import Union
+
+import os
+
+
 try:
-    from requests             import Session, exceptions, Response
+    from requests               import Session, exceptions, Response
 except ImportError:
-    from pip._vendor.requests import Session, exceptions, Response
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'requests'))
+    from pip._vendor.requests   import Session, exceptions, Response
+    _log.Error(Code('0.0.0.0.0').format(Module = 'requests'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 
 class Options:
@@ -53,15 +54,15 @@ class Options:
 
     def Start_Bots(self) -> bool:
         try:
-            _log.Info(Get_Lang.get('0.0.1.7.0'))
+            _log.Info(Code('0.0.2.4.0'))
             if not os.path.exists('{0}/User/Bots/Bots.json'.format(self.Path)):
                 os.makedirs('{0}/User/Bots'.format(self.Path), exist_ok = True)
                 Save('{0}/User/Bots/Bots.json'.format(self.Path), {'Bots': []})
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
-        _log.Info('Chargement des bot')
+        _log.Info(Code('0.0.2.4.1'))
         for Bot in Open('{0}/User/Bots/Bots.json'.format(self.Path), {'Bots': []}).get('Bots', []):
             Bot_ = _Bots(Bot, self)
 
@@ -69,7 +70,7 @@ class Options:
                 Bot_.start()
                 self._bots[Bot] = Bot_
 
-        _log.Info('Les bot ont corectement été charger')
+        _log.Info(Code('0.0.2.4.2'))
         return True
 
     def add(self, Id: str = MISSING) -> bool:
@@ -79,13 +80,13 @@ class Options:
             while not Bot_.Initialized and not Bot_.Error:
                 pass
 
-            _log.Info('Lancement du bot')
+            _log.Info(Code('0.0.2.4.3'))
             Bot_.start()
             self._bots[Id] = Bot_
 
             return True
         else:
-            _log.Warn('L\'id du bot est manquant')
+            _log.Warn(Code('0.0.2.4.4'))
             return False
 
     def __bool__(self) -> bool:

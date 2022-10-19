@@ -1,19 +1,17 @@
-from ..GetLang import Get_Lang, Get_User_Lang
-from ..type.Bot import Bot
-from ..Logger  import Log
-from ..Utils    import send, channel_send, Open, Save
+from ..Utils            import send, channel_send, Open, Save
+from ..GetLang          import Get_Lang, Get_User_Lang
+from ..Logger           import Logger
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
 
 class Ticket(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -25,7 +23,7 @@ class Ticket(commands.Cog):
     async def _check(slef, ctx: commands.Context) -> bool:
         if not ctx.author.bot:
             if not (ctx.guild):
-                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.9.3"))
+                await send(ctx, message =  Get_User_Lang(ctx.author.id).get("0.0.0.2.2"))
                 return False
             return True
         else:
@@ -75,7 +73,7 @@ class Ticket(commands.Cog):
                         overwrites=_Overwrites,
                         category  =_Category
                     )
-                    _Message = await channel_send(_Channel, embed=discord.Embed(description=Get_User_Lang(ctx.author.id).get('0.0.1.3.5')))
+                    _Message = await channel_send(_Channel, embed=discord.Embed(description=Get_User_Lang(ctx.author.id).get('0.0.0.9.0')))
                     await _Message.add_reaction('🔒')
                     break
                 else:
@@ -87,8 +85,11 @@ class Ticket(commands.Cog):
 
 async def setup(Bot: Bot) -> bool:
     try:
+        _log.Info('Ajout du cog au bot')
         await Bot.Client.add_cog(Ticket(Bot))
     except Exception:
+        _log.Warn('Ajout fail')
         return False
     else:
+        _log.Info('Ajout reussi')
         return True

@@ -10,7 +10,7 @@ class Options:
     Initialized: bool
     Info:        dict
     sessions:    Session
-    Bots:        dict
+    Bots:        dict[str]
 
     def __len__(self)                                           -> int:...
     def __init__(self)                                          -> None:...

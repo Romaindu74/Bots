@@ -1,21 +1,19 @@
+from ..GetLang          import Code, Get_User_Lang
+from ..Utils            import send, Open, Save
+from ..Logger           import Logger
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
+
 import os
-from ..GetLang import Get_Lang, Get_User_Lang
-from ..type.Bot import Bot
-from ..Logger  import Log
-from ..Utils   import send, Open, Save
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
-
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Langue(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -31,7 +29,7 @@ class Langue(commands.Cog):
                 self.language = r.json()
             except Exception as e:
                 self.language = []
-                Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
         return self.language
 
     @commands.command(
@@ -41,16 +39,16 @@ class Langue(commands.Cog):
         if not ctx.author.bot:
             self.language = self.get_list_lang()
             if not Lang:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.8.4').format(Lang = Get_User_Lang(ctx.author.id).get_lang))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.1.7').format(lang = Get_User_Lang(ctx.author.id).get_lang))
 
             elif Lang == 'list':
                 descrption = ''
                 for i in self.language:
                     descrption += '> '+str(i).replace('.json', '')+'\n'
-                await send(ctx, embed=discord.Embed(title=Get_User_Lang(ctx.author.id).get('0.0.0.8.5'), description=descrption))
+                await send(ctx, embed=discord.Embed(title=Get_User_Lang(ctx.author.id).get('0.0.0.1.8'), description=descrption))
 
             elif not Lang+'.json' in self.language:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.8.6'))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.1.9'))
 
             else:
                 os.makedirs('{0}/User/__User__/'.format(self.options.Path), exist_ok=True)
@@ -60,12 +58,16 @@ class Langue(commands.Cog):
 
                 Save('{0}/User/__User__/{1}.json'.format(self.options.Path, ctx.author.id), user_lang)
 
-                await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.8.7').format(Lang = Lang)))
+                await send(ctx, embed = discord.Embed(title = Get_User_Lang(ctx.author.id).get('0.0.0.2.0').format(lang = Lang)))
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Langue(Bot)
     try:
-        await Bot.Client.add_cog(Langue(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

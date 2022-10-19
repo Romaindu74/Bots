@@ -1,44 +1,44 @@
 from typing      import Union
-from .GetLang    import Get_Lang, Get_User_Lang
+from .GetLang    import Code, Get_User_Lang
 from .Logger     import Logger
 from .Utils      import send
 from .type.Bot   import Bot
 from .YTDLSource import YTDLSource
 
+_log = Logger(__name__)
+
 import math
 import random
 import asyncio
-
-_log = Logger(__name__)
 
 try:
     import discord
     from discord.ext import commands
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Error(Code('0.0.0.0.0').format(Module = 'discord'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 try:
     from async_timeout import timeout
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'async_timeout'), True)
+    _log.Error(Code('0.0.0.0.0').format(Module = 'async_timeout'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 try:
     import functools
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'functools'), True)
+    _log.Error(Code('0.0.0.0.0').format(Module = 'functools'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 try:
     import youtube_dl
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'youtube_dl'), True)
+    _log.Error(Code('0.0.0.0.0').format(Module = 'youtube_dl'))
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 __all__ = (
     'VoiceState'
@@ -52,11 +52,11 @@ class Song:
         self.requester = source.requester
 
     def create_embed(self, user_id: int) -> discord.Embed:
-        embed = discord.Embed(title = Get_User_Lang(user_id).get('0.0.0.3.4'), description = '```css\n{0}\n```'.format(self.source.title))
-        embed.add_field(name = Get_User_Lang(user_id).get('0.0.0.3.5'), value = self.source.duration,   inline=False)
-        embed.add_field(name = Get_User_Lang(user_id).get('0.0.0.3.6'), value = self.requester.mention, inline=False)
-        embed.add_field(name = Get_User_Lang(user_id).get('0.0.0.3.7'), value = Get_User_Lang(user_id).get('0.0.0.3.8').format(Name = self.source.uploader, Url = self.source.uploader_url), inline=False)
-        embed.add_field(name = Get_User_Lang(user_id).get('0.0.0.3.9'), value = Get_User_Lang(user_id).get('0.0.0.4.0').format(Url = self.source.url), inline=False)
+        embed = discord.Embed(title = Get_User_Lang(user_id).get('0.0.2.6.6'), description = '```css\n{0}\n```'.format(self.source.title))
+        embed.add_field(name = Get_User_Lang(user_id).get('0.0.2.6.7'), value = self.source.duration,   inline=False)
+        embed.add_field(name = Get_User_Lang(user_id).get('0.0.2.6.8'), value = self.requester.mention, inline=False)
+        embed.add_field(name = Get_User_Lang(user_id).get('0.0.2.6.9'), value = Get_User_Lang(user_id).get('0.0.2.7.0').format(name = self.source.uploader, url = self.source.uploader_url), inline=False)
+        embed.add_field(name = Get_User_Lang(user_id).get('0.0.2.7.1'), value = Get_User_Lang(user_id).get('0.0.2.7.2').format(url = self.source.url), inline=False)
         embed.set_thumbnail(url = self.source.thumbnail)
 
         return embed
@@ -133,7 +133,7 @@ class VoiceState:
                 break
 
             except Exception as e:
-                _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
 
             else:
                 if self.is_playing and self.current != None:
@@ -181,7 +181,7 @@ class VoiceState:
             self.voice = await destination.connect(self_deaf=True)
             return True
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
     async def _leave(self) -> bool:
@@ -197,7 +197,7 @@ class VoiceState:
             self.audio_task.cancel()
             return True
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
     async def _play(self, ctx: commands.Context, search: str) -> None:
@@ -216,7 +216,7 @@ class VoiceState:
 
             elif 'title' in data:
                 self.songs.append({"url": data.get('webpage_url'), "name": data.get('title')})
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.4.1').format(Name = data.get('title')))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.3').format(name = data.get('title')))
                 if not self.play:
                     self.play = True
 
@@ -231,7 +231,7 @@ class VoiceState:
         n = 0
         for entrie in data.get('entries'):
             n+=1;self.songs.append({"url": "https://www.youtube.com/watch?v=" + entrie.get('url'), "name": entrie.get('title')})
-        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.4.2').format(n = n, Name = data.get('title')))
+        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.4').format(list = n, name = data.get('title')))
 
         if not self.play:
             self.play = True
@@ -245,7 +245,7 @@ class VoiceState:
         n = 0
         for entrie in data.get('entries'):
             n+=1;self.songs.append({"url": "https://www.youtube.com/watch?v=" + entrie.get('url'), "name": entrie.get('title')})
-        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.4.3').format(Name = data.get('id')))
+        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.3').format(name = data.get('id')))
 
         if not self.play:
             self.play = True
@@ -262,7 +262,7 @@ class VoiceState:
 
             return True
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
     async def _stop(self):
@@ -278,7 +278,7 @@ class VoiceState:
 
             return True
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
     async def _queue(self, ctx: commands.Context, page: int):
@@ -298,7 +298,7 @@ class VoiceState:
                 break
 
         embed = discord.Embed(description = '**{0} {1}**\n\n{2}'.format(len(self.songs), Get_User_Lang(ctx.author.id).get('0.0.0.4.4'), value))
-        embed.set_footer(text=Get_User_Lang(ctx.author.id).get('0.0.0.4.5').format(Page = page, Pages = pages))
+        embed.set_footer(text=Get_User_Lang(ctx.author.id).get('0.0.0.2.9').format(page = page, pages = pages))
 
         await send(ctx, embed = embed)
 
@@ -324,28 +324,28 @@ class VoiceState:
                     return True
 
                 else:
-                    await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.4.6').format(Total = total))
+                    await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.6').format(total = total))
 
             else:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.4.7'))
+                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.7'))
 
     async def _volume(self, ctx: commands.Context, volume: Union[float, bool]):
         if volume == False:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.4.8').format(V = (self.volume*100)))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.8').format(volume = (self.volume*100)))
 
         elif 0 > volume or volume > 100:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.4.9'))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.9'))
 
         else:
             self.volume = volume/100
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.0').format(V = volume))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.8.0').format(volume = volume))
 
     async def _pause(self):
         try:
             self.voice.pause()
             return True
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
     async def _resume(self):
@@ -354,7 +354,7 @@ class VoiceState:
                 self.voice.resume()
             return True
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
     async def _shuffle(self):
@@ -362,7 +362,7 @@ class VoiceState:
             random.shuffle(self.songs)
             return True
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
     async def _remove(self, ctx: commands.Context, index: int):
@@ -370,7 +370,7 @@ class VoiceState:
             return user == ctx.author and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌') and (reaction.message.id == message.id)
         
         music = self.songs[index-1]
-        message = await send(ctx, embed = discord.Embed(description = Get_User_Lang(ctx.author.id).get('0.0.0.5.1').format(Name = music['name'], Url = music['url'])))
+        message = await send(ctx, embed = discord.Embed(description = Get_User_Lang(ctx.author.id).get('0.0.2.8.1').format(name = music['name'], url = music['url'])))
 
         await message.add_reaction('✅')
         await message.add_reaction('❌')
@@ -378,14 +378,14 @@ class VoiceState:
         try:
             reaction, user = await self.client.wait_for('reaction_add', check = reaction_check, timeout = 300)
         except asyncio.TimeoutError:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.5.2'))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.8.2'))
         except Exception as e:
-            _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+            _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
         else:
             await message.clear_reactions()
 
             if str(reaction.emoji) == '✅':
                 del self.songs[index-1]
-                await message.edit(embed = discord.Embed(description = Get_User_Lang(ctx.author.id).get('0.0.0.5.3').format(Name = music['name'])))
+                await message.edit(embed = discord.Embed(description = Get_User_Lang(ctx.author.id).get('0.0.2.8.3').format(name = music['name'])))
             else:
                 await message.delete()

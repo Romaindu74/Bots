@@ -1,8 +1,10 @@
+from .type.GetLang      import Code
+
 import datetime
 import colorama
 import sys
 
-from typing import Union, Optional
+from typing             import Union, Optional
 
 colorama.init(True)
 
@@ -81,7 +83,13 @@ class Logger:
             ))
         file.close()
 
-    def _print(self, text: str, level: int, *args, **kwargs) -> None:
+    def _print(self, text: Union[str, Code], level: int, *args, **kwargs) -> None:
+        if text == None:
+            return
+
+        if isinstance(text, Code):
+            text = text.content()
+
         context = '[{0}] [{1}] [{2}] {3}'.format(
                 self.time(),
                 (self.file + ((20 - len(self.file)) * ' ')),
@@ -98,22 +106,22 @@ class Logger:
         if kwargs.get('Exit', False):
             sys.exit(0)
 
-    def Critical(self, text: str, *args, **kwargs) -> None:
+    def Critical(self, text: Union[str, Code] = None, *args, **kwargs) -> None:
         self._print(text, CRITICAL, *args, **kwargs)
 
-    def Error(self, text: str, *args, **kwargs) -> None:
+    def Error(self, text: Union[str, Code] = None, *args, **kwargs) -> None:
         self._print(text, ERROR, *args, **kwargs)
 
-    def Warn(self, text: str, *args, **kwargs) -> None:
+    def Warn(self, text: Union[str, Code] = None, *args, **kwargs) -> None:
         self._print(text, WARNING, *args, **kwargs)
 
-    def Info(self, text: str, *args, **kwargs) -> None:
+    def Info(self, text: Union[str, Code] = None, *args, **kwargs) -> None:
         self._print(text, INFO, *args, **kwargs)
 
-    def Debug(self, text: str, *args, **kwargs) -> None:
+    def Debug(self, text: Union[str, Code] = None, *args, **kwargs) -> None:
         self._print(text, DEBUG, *args, **kwargs)
 
-    def NoSet(self, text: str, *args, **kwargs) -> None:
+    def NoSet(self, text: Union[str, Code] = None, *args, **kwargs) -> None:
         self._print(text, NOSET, *args, **kwargs)
 
 

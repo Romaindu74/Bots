@@ -1,43 +1,41 @@
-from .GetLang      import Get_Lang
-from .Logger       import Logger
-from .Utils        import Save, Open, MISSING
-from .type.Bot     import Bot
-from .type.Options import Options
+from .GetLang       import Code
+from .Logger        import Logger
+from .Utils         import Save, Open, MISSING
+from .type.Bot      import Bot
+from .type.Options  import Options
 
 _log = Logger(__name__)
 
-from typing import Union
+from typing         import Union
+from tkinter        import messagebox
+
 import shutil
+import tkinter as tk
+import os, threading
 
 try:
-    from PIL import Image, ImageTk
+    from PIL        import Image, ImageTk
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'pillow'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'pillow'), Exit = True)
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 try:
     import signal
 except ImportError:
-    _log.Critical(Get_Lang.get('0.0.0.0.0').format(Name = 'signal'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'signal'), Exit = True)
 except Exception as e:
-    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-
-from tkinter import messagebox
-import tkinter as tk
-import os, threading
-
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Interface(threading.Thread):
     def __init__(self, options: Options = MISSING) -> None:
         super(Interface, self).__init__()
-        _log.Info('Initialization de l\'interface')
+        _log.Info(Code('0.0.1.3.2'))
 
         self.check                           = False
 
         if options == MISSING:
-            _log.Critical(Get_Lang.get('0.0.1.5.2').format(Error = Get_Lang.get('0.0.1.5.1')), True)
+            _log.Critical(Code('0.0.1.3.0').format(error = Code('0.0.1.3.1')))
 
         else:
             self.check = True
@@ -54,28 +52,33 @@ class Interface(threading.Thread):
 
         self.language_: list                 = []
         self.conf_                           = None
-        _log.Info('Initialisation terminer')
-
+        _log.Info(Code('0.0.1.3.3'))
 
     def run(self) -> None:
-        _log.Info(Get_Lang.get('0.0.1.5.3'))
-        self._main__ = tk.Tk()
+        _log.Info(Code('0.0.1.3.4'))
+        try:
+            self._main__ = tk.Tk()
+        except Exception:
+            _log.Critical(Code('0.0.1.3.5'))
+            self.interface__ = False
+            self.Initialized = False
+            return
+
         self._main_  = tk.Frame(self._main__)
         self._main_.place(width=900, height=500)
-        # self._main_.pack(fill = tk.BOTH, expand=tk.YES)
 
         self._main__.title(self.options.Info.get('Windows-Title', 'Sayu#0475'))
         self._main__.geometry('900x500')
         self._main__.resizable(False, False)
 
         if os.path.exists(self.options.Path+'/Bot/icon.png'):
-            _log.Info('Recuperation de l\'icon')
+            _log.Info(Code('0.0.1.3.6'))
             self._main__.iconphoto(False, tk.PhotoImage(file=self.options.Path+'/Bot/icon.png'))
 
         try:
             self.Initialized = True
             self.interface__ = True
-            _log.Info(Get_Lang.get('0.0.1.7.1'))
+            _log.Info(Code('0.0.1.3.7'))
             self._main__.mainloop()
             self.interface__ = False
             self.stop()
@@ -84,40 +87,40 @@ class Interface(threading.Thread):
             self.Initialized = False
 
     def _scroll_bar(self) -> None:
-        _log.Info('Ajout de la ScrollBar')
+        _log.Info(Code('0.0.1.3.8'))
         self.ScrollBar = tk.Scrollbar(self._main__)
         self.ScrollBar.pack(fill = tk.BOTH, side = tk.RIGHT)
-        _log.Info('Ajout Reussi')
-        # self.ScrollBar.place(relx=0.981,height=self._main__.winfo_height(), bordermode = tk.OUTSIDE)
+        _log.Info(Code('0.0.1.3.9'))
 
     def stop(self) -> None:
-        _log.Info(Get_Lang.get('0.0.1.4.6'))
+        _log.Info(Code('0.0.1.4.0'))
         if self.interface__ == True:
-            _log.Info('Destruction de l\'interface')
+            _log.Info(Code('0.0.1.4.1'))
             self._main__.destroy()
             self._main__.quit()
-        _log.Info('Extinction des bots')
+        _log.Info(Code('0.0.1.4.2'))
         for Bot in self.options.Bots:
             try:
-                self.options.Bots[Bot].Stop()
+                if self.options.Bots[Bot].Status_ != '0.0.0.3.3':
+                    self.options.Bots[Bot].Stop()
             except Exception as e:
-                _log.Critical(Get_Lang.get('0.0.1.4.9').format(Error = str(e)))
+                _log.Critical(Code('0.0.1.3.0').format(error = str(e)))
 
         os.kill(os.getpid(), signal.SIGTERM)
 
     def Menu(self, main: tk.Tk) -> tk.Menu:
-        _log.Info('Creation du menu de l\'interface')
+        _log.Info(Code('0.0.1.4.3'))
         _main_:    tk.Menu = tk.Menu(main)
 
         _options_: tk.Menu = tk.Menu(_main_, tearoff=0)
 
-        _log.Info('Creation des commandes pour le menu')
-        _options_.add_command(label = Get_Lang.get('0.0.1.5.6'), command = self.change_language)
-        _options_.add_command(label = Get_Lang.get('0.0.1.5.7'), command = self.add_bot)
-        _options_.add_command(label = Get_Lang.get('0.0.1.5.8'), command = self.stop)
+        _log.Info(Code('0.0.1.4.4'))
+        _options_.add_command(label = Code('0.0.1.4.6'), command = self.change_language)
+        _options_.add_command(label = Code('0.0.1.4.7'), command = self.add_bot)
+        _options_.add_command(label = Code('0.0.1.4.8'), command = self.stop)
 
-        _main_.add_cascade(label = Get_Lang.get('0.0.1.5.9'), menu = _options_)
-        _log.Info('Creation Terminer')
+        _main_.add_cascade(label = Code('0.0.1.4.9'), menu = _options_)
+        _log.Info(Code('0.0.1.4.5'))
 
         return _main_
 
@@ -126,7 +129,7 @@ class Interface(threading.Thread):
             self.Config.destroy()
             self.Config = None
 
-        _log.Info(Get_Lang.get('0.0.1.5.4'))
+        _log.Info(Code('0.0.1.5.0'))
         try:
             list(self.bots_.items())[0][1][2].destroy()
         except IndexError:
@@ -139,25 +142,25 @@ class Interface(threading.Thread):
 
         self.Config = _main_
 
-        self._main__.title(Get_Lang.get('0.0.1.5.7'))
+        self._main__.title(Code('0.0.1.4.7'))
 
-        LabelFrame = tk.LabelFrame(_main_, text = Get_Lang.get('0.0.1.5.7'))
+        LabelFrame = tk.LabelFrame(_main_, text = Code('0.0.1.4.7'))
         self.add_bot_LabelFrame = LabelFrame
         LabelFrame.pack(fill = tk.BOTH, expand = tk.YES)
 
-        self.Label_1 = tk.Label(LabelFrame, text=Get_Lang.get('0.0.1.6.0'))
+        self.Label_1 = tk.Label(LabelFrame, text=Code('0.0.1.5.1'))
         self.Label_1.grid(column = 0, row = 0, sticky=tk.W)
 
         self.Input_1 = tk.Entry(LabelFrame, width=50)
         self.Input_1.grid(column = 0, row = 1, sticky=tk.W)
 
-        self.Label_2 = tk.Label(LabelFrame, text=Get_Lang.get('0.0.1.6.1'))
+        self.Label_2 = tk.Label(LabelFrame, text=Code('0.0.1.5.2'))
         self.Label_2.grid(column = 0, row = 2, sticky=tk.W)
 
         self.Input_2 = tk.Entry(LabelFrame, width=50)
         self.Input_2.grid(column = 0, row = 3, sticky=tk.W)
 
-        self.Label_3 = tk.Label(LabelFrame, text=Get_Lang.get('0.0.1.6.2'))
+        self.Label_3 = tk.Label(LabelFrame, text=Code('0.0.1.5.3'))
         self.Label_3.grid(column = 0, row = 4, sticky=tk.W)
 
         self.Input_3 = tk.Entry(LabelFrame, width=100)
@@ -166,20 +169,20 @@ class Interface(threading.Thread):
         self.Error_1 = tk.Label(LabelFrame)
         self.Error_1.grid(column = 0, row = 6)
 
-        Button_1  = tk.Button(LabelFrame, text=Get_Lang.get('0.0.1.6.3'), command = self.add_bot_add)
+        Button_1  = tk.Button(LabelFrame, text=Code('0.0.1.5.4'), command = self.add_bot_add)
         Button_1.grid(column = 0, row = 7, sticky=tk.W)
 
-        Button_2  = tk.Button(LabelFrame, text=Get_Lang.get('0.0.1.6.4'), command=self.add_bot_cancel)
+        Button_2  = tk.Button(LabelFrame, text=Code('0.0.1.5.5'), command=self.add_bot_cancel)
         Button_2.grid(column = 1, row = 7, sticky=tk.E)
-        _log.Info(Get_Lang.get('0.0.1.5.5'))
+        _log.Info(Code('0.0.1.5.6'))
 
     def add_bot_add(self) -> None:
         if self.add_bot_LabelFrame is not None:
             if self.Input_1.get() == '' or self.Input_2.get() == '' or self.Input_3.get() == '':
-                _log.Warn('Les champs ne peuvent pas etre vide')
-                self.Error_1.config(text = Get_Lang.get('0.0.1.6.5'), fg = 'red')
+                _log.Warn(Code('0.0.1.5.7'))
+                self.Error_1.config(text = Code('0.0.1.5.8'), fg = 'red')
             else:
-                _log.Info('Ajoutation du bot dans la base de donné')
+                _log.Info(Code('0.0.1.5.9'))
                 if not os.path.exists('{0}/User/Bots/Bots.json'.format(self.options.Path)):
                     os.makedirs('{0}/User/Bots'.format(self.options.Path), exist_ok = True)
                     Save('{0}/User/Bots/Bots.json'.format(self.options.Path), {'Bots': []})
@@ -188,7 +191,7 @@ class Interface(threading.Thread):
                 Bots.append(str(self.Input_1.get()))
                 Save('{0}/User/Bots/Bots.json'.format(self.options.Path), {'Bots': Bots})
 
-                _log.Info('Creation des fichier requis pour le bot')
+                _log.Info(Code('0.0.1.6.0'))
                 if not os.path.exists('{0}/User/Bots/{1}/'.format(self.options.Path, str(self.Input_1.get()))):
                     os.makedirs('{0}/User/Bots/{1}/'.format(self.options.Path, str(self.Input_1.get())), exist_ok = True)
 
@@ -236,10 +239,10 @@ class Interface(threading.Thread):
 
         self._main__.title(self.options.Info.get('Windows-Title', 'Sayu#0475'))
         if not os.path.exists(self.options.Path+'/User/Bots/Bots.json'):
-            _log.Warn('La base de donné na pas été trouvé')
+            _log.Warn(Code('0.0.1.6.1'))
             return False
 
-        _log.Info('Ajou des bots sur l\'interface')
+        _log.Info(Code('0.0.1.6.2'))
         for Bot in self.options.Bots:
             Bot_ = BotConfig(self, self.options.Bots[Bot], self.options)
             Frame: tk.Frame = tk.Frame(scrollable_frame)
@@ -256,24 +259,24 @@ class Interface(threading.Thread):
                 Label_.image = Image__
                 Label_.grid(column = 0)
 
-            Button_: tk.Button = tk.Button(LabelFrame, text = Get_Lang.get('0.0.1.6.6'), command = Bot_.Config)
+            Button_: tk.Button = tk.Button(LabelFrame, text = Code('0.0.1.6.3'), command = Bot_.Config)
             Button_.grid(column = 0, row = 1)
 
-            Label__ = tk.Label(LabelFrame, text = Get_Lang.get('0.0.1.6.7').format(Statu = Get_Lang.get(self.options.Bots[Bot].Status_)))
+            Label__ = tk.Label(LabelFrame, text = Code('0.0.1.6.4').format(status = Code(self.options.Bots[Bot].Status_)))
             Label__.grid(column = 1, row = 0)
 
-            if self.options.Bots[Bot].Status_ != '0.0.0.6.2':
-                Button__: tk.Button = tk.Button(LabelFrame, text = Get_Lang.get('0.0.1.6.8'), command = Bot_.Stop)
+            if self.options.Bots[Bot].Status_ != '0.0.0.3.3':
+                Button__: tk.Button = tk.Button(LabelFrame, text = Code('0.0.1.6.5'), command = Bot_.Stop)
             else:
-                Button__: tk.Button = tk.Button(LabelFrame, text = Get_Lang.get('0.0.1.6.9'), command = Bot_.Start)
+                Button__: tk.Button = tk.Button(LabelFrame, text = Code('0.0.1.6.6'), command = Bot_.Start)
 
             Button__.grid(column = 1, row = 1)
 
             self.bots_[Bot] = [Frame, LabelFrame, container]
-        _log.Info('Tout les bot ont bien été ajouter a l\'interface')
+        _log.Info(Code('0.0.1.6.7'))
 
     def UpDate_Bot(self, Id: str) -> None:
-        _log.Info('Rechargement du bot {0}'.format(Id))
+        _log.Info(Code('0.0.1.6.8').format(bot = Id))
         self.bots_[Id][1].destroy()
         Bot_ = BotConfig(self, self.options.Bots[Id], self.options)
 
@@ -290,21 +293,21 @@ class Interface(threading.Thread):
             Label_.image = Image__
             Label_.grid(column = 0)
 
-        Button_: tk.Button = tk.Button(LabelFrame, text = Get_Lang.get('0.0.1.6.6'), command = Bot_.Config)
-        Button_.grid(column = 0, row = 1)
+            Button_: tk.Button = tk.Button(LabelFrame, text = Code('0.0.1.6.3'), command = Bot_.Config)
+            Button_.grid(column = 0, row = 1)
 
-        Label__ = tk.Label(LabelFrame, text = Get_Lang.get('0.0.1.6.7').format(Statu = Get_Lang.get(self.options.Bots[Id].Status_)))
-        Label__.grid(column = 1, row = 0)
+            Label__ = tk.Label(LabelFrame, text = Code('0.0.1.6.4').format(status = Code(self.options.Bots[Id].Status_)))
+            Label__.grid(column = 1, row = 0)
 
-        if self.options.Bots[Id].Status_ != '0.0.0.6.2':
-            Button__: tk.Button = tk.Button(LabelFrame, text = Get_Lang.get('0.0.1.6.8'), command = Bot_.Stop)
-        else:
-            Button__: tk.Button = tk.Button(LabelFrame, text = Get_Lang.get('0.0.1.6.9'), command = Bot_.Start)
+            if self.options.Bots[Id].Status_ != '0.0.0.3.3':
+                Button__: tk.Button = tk.Button(LabelFrame, text = Code('0.0.1.6.5'), command = Bot_.Stop)
+            else:
+                Button__: tk.Button = tk.Button(LabelFrame, text = Code('0.0.1.6.6'), command = Bot_.Start)
 
-        Button__.grid(column = 1, row = 1)
+            Button__.grid(column = 1, row = 1)
 
         self.bots_[Id] = [Frame, LabelFrame, self.bots_[Id][2]]
-        _log.Info('Rechargement du bot {0} Terminer'.format(Id))
+        _log.Info(Code('0.0.1.6.9').format(bot = Id))
 
     def change_language(self) -> None:
         if self.Config != None:
@@ -323,21 +326,21 @@ class Interface(threading.Thread):
 
         self.Config = _main_
 
-        self._main__.title(Get_Lang.get('0.0.0.1.6'))
+        self._main__.title(Code('0.0.1.4.6'))
 
         self._ListBot_ = tk.Listbox(_main_, selectmode=tk.SINGLE)
 
         self._ListBot_.config(yscrollcommand=self.ScrollBar.set)
         self.ScrollBar.config(command=self._ListBot_.yview)
 
-        _log.Info(Get_Lang.get('0.0.1.7.4'))
+        _log.Info(Code('0.0.1.7.0'))
         if self.language_ == []:
             with self.options.Send('https://raw.githubusercontent.com/Romaindu74/Bots/main/Language.json') as r:
                 try:
                     self.language_: list[str] = r.json()
-                    _log.Info(Get_Lang.get('0.0.1.7.5'))
+                    _log.Info(Code('0.0.1.7.1'))
                 except Exception as e:
-                    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                     return False
 
         index = 0
@@ -355,30 +358,30 @@ class Interface(threading.Thread):
     def change_language_save(self, event: tk.Event) -> None:
         language = self._ListBot_.get(self._ListBot_.curselection())
         os.makedirs('{0}/Bot/Language/'.format(self.options.Path), 777, True)
-        _log.Info(Get_Lang.get('0.0.0.2.9').format(Name = str(language)+'.json'))
+        _log.Info(Code('0.0.1.7.2').format(file = str(language)+'.json'))
         if not str(language)+'.json' in [f for f in os.listdir('{0}/Bot/Language/'.format(self.options.Path)) if os.path.isfile(os.path.join('{0}/Bot/Language/'.format(self.options.Path), f))]:
-            _log.Info(Get_Lang.get('0.0.0.3.0').format(Name = str(language)))
+            _log.Info(Code('0.0.1.7.3').format(file = str(language)))
             f = open('{0}/Bot/Language/{1}'.format(self.options.Path, str(language)+'.json'), 'wb+')
             with self.options.Send('https://raw.githubusercontent.com/Romaindu74/Bots/main/Language/{0}'.format(str(language)+'.json')) as r:
                 try:
                     f.write(r.content)
                 except Exception as e:
-                    _log.Critical(Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)))
+                    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
                     return False
                 f.close()
-            _log.Info(Get_Lang.get('0.0.0.3.1'))
+            _log.Info(Code('0.0.1.7.4'))
 
         else:
-            _log.Info(Get_Lang.get('0.0.0.3.2'))
+            _log.Info(Code('0.0.1.7.5'))
 
         os.makedirs('{0}/User/__Json__/'.format(self.options.Path), 777, True)
         main = Open('{0}/User/__Json__/Main.json'.format(self.options.Path))
         main['Lang'] = language
         Save('{0}/User/__Json__/Main.json'.format(self.options.Path), main)
 
-        _log.Info(Get_Lang.get('0.0.0.3.3'))
+        _log.Info(Code('0.0.1.7.6'))
+        self._main__.config(menu = self.Menu(self._main__))
         self.cancel()
-
 
     def cancel(self) -> None:
         if self._ListBot_ is not None:
@@ -387,7 +390,7 @@ class Interface(threading.Thread):
 
 
     def Start(self) -> None:
-        _log.Info('Creation de la Scrolbar')
+        _log.Info(Code('0.0.1.7.7'))
         self._scroll_bar()
         self._main__.config(menu = self.Menu(self._main__))
         self.Bots()
@@ -415,7 +418,7 @@ class BotConfig(object):
             self.main.Config.destroy()
             self.main.Config = None
 
-        _log.Info('Chargement du menu')
+        _log.Info(Code('0.0.1.8.5'))
         self._main_      = tk.Frame(self.main._main_)
         self._main_.pack(fill=tk.BOTH, expand = tk.YES)
 
@@ -425,38 +428,38 @@ class BotConfig(object):
 
         self.main.bots_[self.bot.Id][2].destroy()
 
-        self.LabelFrame         = tk.LabelFrame(self._main_, text = 'Information')
+        self.LabelFrame         = tk.LabelFrame(self._main_, text = Code('0.0.2.1.5'))
         self.LabelFrame.pack(fill = tk.BOTH, expand=tk.YES)
 
-        self.Bot_Name           = tk.Label(self.LabelFrame, text = 'Nom : {0}'.format(self.bot.Info.get('Name', '...')))
+        self.Bot_Name           = tk.Label(self.LabelFrame, text = Code('0.0.2.1.6').format(bot = self.bot.Info.get('Name', '...')))
         self.Bot_Name.grid(sticky='w')
 
-        self.Bot_Id             = tk.Label(self.LabelFrame, text = 'Id : {0}'.format(self.bot.Info.get('Id', '...')))
+        self.Bot_Id             = tk.Label(self.LabelFrame, text = Code('0.0.2.1.7').format(bot = self.bot.Info.get('Id', '...')))
         self.Bot_Id.grid(sticky='w')
 
-        self.Bot_Statu          = tk.Label(self.LabelFrame, text = 'Statu : {0}'.format(Get_Lang.get(self.bot.Status_)))
+        self.Bot_Statu          = tk.Label(self.LabelFrame, text = Code('0.0.2.1.8').format(status = Code(self.bot.Status_)))
         self.Bot_Statu.grid(sticky='w')
 
-        self.Bot_Prefix         = tk.Label(self.LabelFrame, text = Get_Lang.get('0.0.0.2.1').format(Prefix = self.bot.Prefix.get('Prefix', [])))
+        self.Bot_Prefix         = tk.Label(self.LabelFrame, text = Code('0.0.1.7.8').format(prefix = self.bot.Prefix.get('Prefix', [])))
         self.Bot_Prefix.grid(sticky='w')
 
-        self.Discord_LabelFrame = tk.LabelFrame(self._main_, text = Get_Lang.get('0.0.0.2.2'))
+        self.Discord_LabelFrame = tk.LabelFrame(self._main_, text = Code('0.0.1.7.9'))
         self.Discord_LabelFrame.pack(fill='both', expand='yes')
 
-        self.Bot_Ms             = tk.Label(self.Discord_LabelFrame, text = Get_Lang.get('0.0.0.2.3').format(Ping = self.bot.Ping))
+        self.Bot_Ms             = tk.Label(self.Discord_LabelFrame, text = Code('0.0.1.8.0').format(ping = self.bot.Ping))
         self.Bot_Ms.grid(sticky='w')
 
-        self.Statut_LabelFrame  = tk.LabelFrame(self._main_, text = Get_Lang.get('0.0.0.2.4'))
+        self.Statut_LabelFrame  = tk.LabelFrame(self._main_, text = Code('0.0.1.8.1'))
         self.Statut_LabelFrame.pack(fill='both', expand='yes')
 
         try:
-            self.Bot_Activite       = tk.Label(self.Statut_LabelFrame, text = Get_Lang.get('0.0.0.2.5').format(Activity = self.bot.Status.Activity, Text = self.bot.Status.Text))
+            self.Bot_Activite       = tk.Label(self.Statut_LabelFrame, text = Code('0.0.1.8.2').format(activity = self.bot.Status.Activity, text = self.bot.Status.Text))
             self.Bot_Activite.grid(sticky='w')
 
-            self.Bot_Statut         = tk.Label(self.Statut_LabelFrame, text = Get_Lang.get('0.0.0.2.6').format(Display = self.bot.Status.Statu))
+            self.Bot_Statut         = tk.Label(self.Statut_LabelFrame, text = Code('0.0.1.8.3').format(display = self.bot.Status.Statu))
             self.Bot_Statut.grid(sticky='w')
 
-            self.Bot_Statut_Time    = tk.Label(self.Statut_LabelFrame, text = Get_Lang.get('0.0.0.2.7').format(Time = self.bot.Status.Time))
+            self.Bot_Statut_Time    = tk.Label(self.Statut_LabelFrame, text = Code('0.0.1.8.4').format(time = self.bot.Status.Time))
             self.Bot_Statut_Time.grid(sticky='w')
 
 
@@ -466,35 +469,35 @@ class BotConfig(object):
         except AttributeError:
             pass
 
-        self.Main               = tk.Button(self._main_, text = 'Menu', command=self._Main)
+        self.Main               = tk.Button(self._main_, text = Code('0.0.2.1.9'), command=self._Main)
         self.Main.pack(fill = tk.BOTH)
 
 
-        self._Prefix               = tk.Button(self._main_, text = 'Prefix', command=self.Prefix)
+        self._Prefix               = tk.Button(self._main_, text = Code('0.0.2.2.0'), command=self.Prefix)
         self._Prefix.pack(fill = tk.BOTH)
 
-        self._Owner               = tk.Button(self._main_, text = 'Createur', command=self.Owner)
+        self._Owner               = tk.Button(self._main_, text = Code('0.0.2.2.1'), command=self.Owner)
         self._Owner.pack(fill = tk.BOTH)
 
 
-        self._Owner               = tk.Button(self._main_, text = 'Supprimer', command=self.Sup_Bot, fg = 'red')
+        self._Owner               = tk.Button(self._main_, text = Code('0.0.1.8.7'), command=self.Sup_Bot, fg = 'red')
         self._Owner.pack(fill = tk.BOTH)
-        _log.Info('Chargement du menu fini')
+        _log.Info(Code('0.0.1.8.6'))
 
     def Sup_Bot(self):
-        if not messagebox.askyesno('Supprimer', 'Est tu sur de vouloir supprimer ce Bot'):
+        if not messagebox.askyesno(Code('0.0.1.8.7'), Code('0.0.1.8.8')):
             return
 
         if not self.del_():
-            messagebox.showerror('Error', 'La suppresion du bot a echouer')
+            messagebox.showerror(Code('0.0.1.8.9'), Code('0.0.1.9.0'))
 
         self._Main()
 
     def del_(self) -> bool:
-        _log.Info('Suppression du bot {0}'.format(self.bot.Id))
+        _log.Info(Code('0.0.1.9.1').format(bot = self.bot.Id))
         if self.bot.Status_ != '0.0.0.6.2':
             if not self.bot.Stop():
-                _log.Warn('Le bot n\'es pas etain')
+                _log.Warn(Code('0.0.1.9.2'))
                 return False
 
         del self.options.Bots[self.bot.Id]
@@ -503,7 +506,7 @@ class BotConfig(object):
         except IndexError:
             pass
 
-        _log.Info('Suppression du bot dans la base de donné')
+        _log.Info(Code('0.0.1.9.3'))
         if not os.path.exists('{0}/User/Bots/Bots.json'.format(self.options.Path)):
             os.makedirs('{0}/User/Bots'.format(self.options.Path), exist_ok = True)
             Save('{0}/User/Bots/Bots.json'.format(self.options.Path), {'Bots': []})
@@ -513,7 +516,7 @@ class BotConfig(object):
             Bots.remove(str(self.bot.Id))
             Save('{0}/User/Bots/Bots.json'.format(self.options.Path), {'Bots': Bots})
 
-            _log.Info('Suppression des fichier du bot')
+            _log.Info(Code('0.0.1.9.4'))
             if os.path.exists('{0}/User/Bots/{1}/'.format(self.options.Path, self.bot.Id)):
                 shutil.rmtree('{0}/User/Bots/{1}/'.format(self.options.Path, self.bot.Id), ignore_errors=True)
 
@@ -521,10 +524,10 @@ class BotConfig(object):
                 shutil.rmtree('{0}/User/{1}/'.format(self.options.Path, self.bot.Id), ignore_errors=True)
 
         except Exception:
-            _log.Error('La suppression a echouer')
+            _log.Error(Code('0.0.1.9.5'))
             return False
 
-        _log.Info('La suppression a reussi')
+        _log.Info(Code('0.0.1.9.6'))
         return True
 
     def _Main(self) -> None:
@@ -552,21 +555,21 @@ class BotConfig(object):
 
         index = 0
 
-        _log.Info('Chargement des prefix')
+        _log.Info(Code('0.0.1.9.7'))
         for i in self.bot.Prefix.get('Prefix', []):
             self._prefix_ListBox_.insert(index, i)
             index += 1
-        _log.Info('Chargement des prefix terminer')
+        _log.Info(Code('0.0.1.9.8'))
 
         self._prefix_ListBox_.pack(fill="both", expand="yes")
 
-        self.add_prefix = tk.Button(self._main_, text = 'Ajouter un prefix', command = self.New_prefix)
+        self.add_prefix = tk.Button(self._main_, text = Code('0.0.2.0.1'), command = self.New_prefix)
         self.add_prefix.pack(fill=tk.X)
 
-        self._sup_prefix_ = tk.Button(self._main_, text = 'Suprimer un prefix', command=self.Sup_Prefix)
+        self._sup_prefix_ = tk.Button(self._main_, text = Code('0.0.2.2.2'), command=self.Sup_Prefix)
         self._sup_prefix_.pack(fill=tk.X)
 
-        self._enter_ = tk.Button(self._main_, text = 'Menu', command=self._Main)
+        self._enter_ = tk.Button(self._main_, text = Code('0.0.2.1.9'), command=self._Main)
         self._enter_.pack(fill=tk.X)
 
     def Owner(self) -> None:
@@ -586,21 +589,21 @@ class BotConfig(object):
 
         index = 0
 
-        _log.Info('Chargement des créateur')
+        _log.Info(Code('0.0.1.9.9'))
         for i in self.bot.Info.get('Owner', []):
             self._owner_ListBox_.insert(index, i)
             index += 1
-        _log.Info('Chargement des créateur fini')
+        _log.Info(Code('0.0.2.0.0'))
 
         self._owner_ListBox_.pack(fill="both", expand="yes")
 
-        self.add_owner = tk.Button(self._main_, text = 'Ajouter un Créateur', command = self.New_owner)
+        self.add_owner = tk.Button(self._main_, text = Code('0.0.2.2.3'), command = self.New_owner)
         self.add_owner.pack(fill=tk.X)
 
-        self._sup_owner_ = tk.Button(self._main_, text = 'Suprimer un Créateur', command=self.Sup_owner)
+        self._sup_owner_ = tk.Button(self._main_, text = ('0.0.2.2.4'), command=self.Sup_owner)
         self._sup_owner_.pack(fill=tk.X)
 
-        self._enter_ = tk.Button(self._main_, text = 'Menu', command=self._Main)
+        self._enter_ = tk.Button(self._main_, text = Code('0.0.2.1.9'), command=self._Main)
         self._enter_.pack(fill=tk.X)
 
     def Input(self, text: str, text_2: str, command) -> tk.Frame:
@@ -622,80 +625,80 @@ class BotConfig(object):
         button = tk.Button(_main_, text=text_2, command=command)
         button.pack(fill=tk.BOTH)
 
-        tk.Button(_main_, text = 'Annuler', command = self.Config).pack(fill=tk.BOTH)
+        tk.Button(_main_, text = Code('0.0.1.5.5'), command = self.Config).pack(fill=tk.BOTH)
 
         return _main_
 
     def New_prefix(self) -> None:
-        self.Input('Ajouter un prefix', 'Ajouter', self.New)
+        self.Input(Code('0.0.2.0.1'), Code('0.0.1.5.4'), self.New)
 
     def Sup_Prefix(self) -> None:
         prefix = self._prefix_ListBox_.curselection()
         if prefix != ():
             name = self._prefix_ListBox_.get(prefix)
-            if not messagebox.askyesno('Supprimer', 'Est tu sur de vouloir supprimer ce prefix: {0}'.format(name)):
+            if not messagebox.askyesno(Code('0.0.1.8.7'), Code('0.0.2.0.2').format(prefix = name)):
                 return
 
-            _log.Info('Suppression du prefix \'{0}\''.format(name))
+            _log.Info(Code('0.0.2.0.3').format(prefix = name))
             prefix = self.bot.Prefix.get('Prefix', [])
             if name in prefix:
                 prefix.remove(name)
             self.bot.Prefix['Prefix'] = prefix
             Save('{0}/User/Bots/{1}/Prefix.json'.format(self.options.Path, self.bot.Id), self.bot.Prefix)
             self.Prefix()
-            _log.Info('Suppression du prefix \'{0}\' reussi'.format(name))
+            _log.Info(Code('0.0.2.0.4').format(prefix = name))
 
     def New(self) -> None:
         if self.input_ is not None:
             entry = self.input_.get()
             if entry != '':
-                _log.Info('Ajout du prefix \'{0}\''.format(entry))
+                _log.Info(Code('0.0.2.0.5').format(prefix = entry))
                 prefix = self.bot.Prefix.get('Prefix', [])
                 prefix.append(entry)
                 self.bot.Prefix['Prefix'] = prefix
                 Save('{0}/User/Bots/{1}/Prefix.json'.format(self.options.Path, self.bot.Id), self.bot.Prefix)
-                _log.Info('Ajout du prefix \'{0}\' reussi'.format(entry))
+                _log.Info(Code('0.0.2.0.6').format(prefix = entry))
 
             self.Prefix()
 
     def New_owner(self) -> None:
-        self.Input('Ajouter un Créateur', 'Ajouter', self.New_o)
+        self.Input(Code('0.0.2.2.3'), Code('0.0.1.5.4'), self.New_o)
 
     def Sup_owner(self) -> None:
         owner = self._owner_ListBox_.curselection()
         if owner != ():
             name = self._owner_ListBox_.get(owner)
-            if not messagebox.askyesno('Supprimer', 'Est tu sur de vouloir supprimer ce Créateur: {0}'.format(name)):
+            if not messagebox.askyesno(Code('0.0.1.8.7'), Code('0.0.2.2.5').format(creator = name)):
                 return
 
-            _log.Info('Suppression du createur \'{0}\''.format(name))
+            _log.Info(Code('0.0.2.0.7').format(creator = name))
             owner = self.bot.Info.get('Owner', [])
             if name in owner:
                 owner.remove(name)
             self.bot.Info['Owner'] = owner
             Save('{0}/User/Bots/{1}/Main.json'.format(self.options.Path, self.bot.Id), self.bot.Info)
             self.Owner()
-            _log.Info('Suppression du createur \'{0}\' reussi'.format(name))
+            _log.Info(Code('0.0.2.0.8').format(creator = name))
 
     def New_o(self) -> None:
         if self.input_ is not None:
             entry = self.input_.get()
             if entry != '':
                 owner = self.bot.Info.get('Owner', [])
-                _log.Info('Ajout du createur \'{0}\''.format(entry))
+                _log.Info(Code('0.0.2.0.9').format(creator = entry))
                 owner.append(entry)
                 self.bot.Info['Owner'] = owner
                 Save('{0}/User/Bots/{1}/Main.json'.format(self.options.Path, self.bot.Id), self.bot.Info)
-                _log.Info('Ajout du createur \'{0}\' reussi'.format(entry))
+                _log.Info(Code('0.0.2.1.0').format(creator = entry))
 
             self.Owner()
 
     def Stop(self) -> None:
-        _log.Info(Get_Lang.get('0.0.1.7.2'))
+        _log.Info(Code('0.0.2.1.1'))
         if not self.bot.Stop():
-            _log.Error('Le bot ne peux pas s\'etaindre')
+            _log.Error(Code('0.0.2.1.2'))
 
     def Start(self) -> None:
-        _log.Info('Lancement du bot')
+        _log.Info(Code('0.0.2.1.3'))
         if not self.bot.Start():
-            _log.Error('Le bot n\'arrive pas a s\'allumer')
+            _log.Error(Code('0.0.2.1.4'))

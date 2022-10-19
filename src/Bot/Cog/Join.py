@@ -1,21 +1,19 @@
-from ..GetLang  import Get_Lang, Get_User_Lang
-from ..type.Bot import Bot
-from ..Logger   import Log
-from ..Utils    import send, Open, Save
+from ..GetLang          import Code, Get_User_Lang
+from ..Utils            import send, Open, Save
+from ..Logger           import Logger
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
 
 import os
 
 try:
     import discord
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Join(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -29,14 +27,16 @@ class Join(commands.Cog):
         if str(ctx.author.id) in self.Bot.Info.get('Owner', []):
             return True
         elif not ctx.author.bot:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.8.0'))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.1.1'))
             return False
 
     @commands.Cog.listener(
         name = "on_guild_join"
     )
-    async def _guild_add(self, guild: discord.Guild) -> None:
+    async def _guild_add(self, guild: discord.Guild) -> dict:
+        _log.Info(Code('0.0.0.1.2').format(guild))
         os.makedirs('{0}/{1}'.format(self._Path, guild.id), exist_ok=True)
+        _log.Info(Code('0.0.0.1.3').format(server = guild.name))
         Data = Open("{0}/{1}/Main.json".format(self._Path, guild.id), {'Info':{'Members':0,'Humains':0,'Bots':0,'Name':str(guild),'Id':int(guild.id)}})
 
         if not 'Info' in Data:
@@ -48,6 +48,7 @@ class Join(commands.Cog):
             else:Data["Info"]["Bots"] += 1
 
         Save("{0}/{1}/Main.json".format(self._Path, guild.id), Data)
+        _log.Info(Code('0.0.0.1.4').format(server = guild.name))
         return Data
 
     @commands.command(
@@ -58,11 +59,11 @@ class Join(commands.Cog):
     )
     async def _verif_guild(self, ctx: commands.Context) -> None:
         if await self._check(ctx):
-            Log(20, Get_User_Lang(ctx.author.id).get('0.0.0.8.1'))
+            _log.Info(Code('0.0.0.1.5'))
             for i in self.client.guilds:
                 await self._guild_add(i)
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.8.2'))
-            Log(20, Get_User_Lang(ctx.author.id).get('0.0.0.8.3'))
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.0.1.6'))
+            _log.Info(Code('0.0.0.1.6'))
 
     @commands.Cog.listener(
         name = "on_member_join"
@@ -97,9 +98,13 @@ class Join(commands.Cog):
         Save("{0}/{1}/Main.json".format(self._Path, member.guild.id), Data)
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Join(Bot)
     try:
-        await Bot.Client.add_cog(Join(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

@@ -1,26 +1,19 @@
-from ..Utils    import Save
-from ..GetLang  import Get_Lang
-from ..type.Bot import Bot
-from ..Logger   import Log
+from ..GetLang          import Code
+from ..Logger           import Logger
+from ..Utils            import Save
+from ..type.Bot         import Bot
+
+_log = Logger(__name__)
+
 import os
+import asyncio
 
 try:
-    from discord.ext import commands
+    from discord.ext    import commands
 except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'discord'), True)
+    _log.Critical(Code('0.0.0.0.0').format(Module = 'discord'), Exit = True)
 except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-try:
-    import asyncio
-except ImportError:
-    Log(50, Get_Lang.get('0.0.0.0.0').format(Name = 'asyncio'), True)
-except Exception as e:
-    Log(50, Get_Lang.get('0.0.0.0.1').format(File = __file__, Error = str(e)), True)
-
-__all__ = (
-    'setup'
-)
+    _log.Critical(Code('0.0.0.0.1').format(file = __file__, error = str(e)), Exit = True)
 
 class Ready(commands.Cog):
     def __init__(self, Bot: Bot) -> None:
@@ -42,46 +35,51 @@ class Ready(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
-        try:
-            os.makedirs(self.options.Path+'/User/Bots/Images/', exist_ok = True)
-            avatar = self.client.user.avatar
-            if avatar is not None:
-                await avatar.save(self.options.Path+'/User/Bots/Images/{0}.png'.format(str(self.client.user.id)))
+        _log.Info(Code('0.0.0.3.2'))
+        os.makedirs(self.options.Path+'/User/Bots/Images/', exist_ok = True)
+        avatar = self.client.user.avatar
+        if avatar is not None:
+            await avatar.save(self.options.Path+'/User/Bots/Images/{0}.png'.format(str(self.client.user.id)))
 
-            self.Bot.Info['Id'] = str(self.client.user.id)
-            self.Bot.Info['Name'] = str(self.client.user.name)
+        self.Bot.Info['Id'] = str(self.client.user.id)
+        self.Bot.Info['Name'] = str(self.client.user.name)
 
-            Save('{0}/User/Bots/{1}/Main.json'.format(self.options.Path, self.Bot.Id), self.Bot.Info)
+        Save('{0}/User/Bots/{1}/Main.json'.format(self.options.Path, self.Bot.Id), self.Bot.Info)
 
-            if not self.ping:
-                self.ping = True
-                self.client.loop.create_task(self._ping())
+        if not self.ping:
+            self.ping = True
+            self.client.loop.create_task(self._ping())
 
-            self.Bot.Status_ = '0.0.0.6.1'
-            self.Interface.UpDate_Bot(str(self.client.user.id))
-        except Exception as e:
-            Log(50, str(e))
+        self.Bot.Status_ = '0.0.0.3.2'
+        self.Interface.UpDate_Bot(str(self.client.user.id))
 
 
     @commands.Cog.listener()
     async def on_disconnect(self) -> None:
-        self.Bot.Status_ = '0.0.0.6.2'
+        _log.Info(Code('0.0.0.3.3'))
+        self.Bot.Status_ = '0.0.0.3.3'
         self.Interface.UpDate_Bot(str(self.client.user.id))
 
     @commands.Cog.listener()
     async def on_connect(self) -> None:
-        self.Bot.Status_ = '0.0.0.6.3'
+        _log.Info(Code('0.0.0.3.4'))
+        self.Bot.Status_ = '0.0.0.3.4'
         self.Interface.UpDate_Bot(str(self.client.user.id))
 
     @commands.Cog.listener()
     async def on_resumed(self) -> None:
-        self.Bot.Status_ = '0.0.0.6.4'
+        _log.Info(Code('0.0.0.3.5'))
+        self.Bot.Status_ = '0.0.0.3.5'
         self.Interface.UpDate_Bot(str(self.client.user.id))
 
 async def setup(Bot: Bot) -> bool:
+    _cog = Ready(Bot)
     try:
-        await Bot.Client.add_cog(Ready(Bot))
+        _log.Info(Code('0.0.0.0.8').format(cog = _cog.__class__.__name__))
+        await Bot.Client.add_cog(_cog)
     except Exception:
+        _log.Warn(Code('0.0.0.0.9').format(cog = _cog.__class__.__name__))
         return False
     else:
+        _log.Info(Code('0.0.0.1.0').format(cog = _cog.__class__.__name__))
         return True

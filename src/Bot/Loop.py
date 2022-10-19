@@ -1,16 +1,17 @@
+from .Utils     import Save, Open
+from .Logger    import Logger
+from .GetLang   import Code
+from .type.Bot  import Bot
+
+_log = Logger(__name__)
+
 import os
 import asyncio
 import discord
 import threading
 
-from time    import monotonic, sleep
-from asyncio import coroutines
-
-from .Logger   import Logger
-from .type.Bot import Bot
-from .Utils    import Save, Open
-
-_log = Logger(__name__)
+from time       import monotonic, sleep
+from asyncio    import coroutines
 
 class Loop:
     def __init__(self, Bot: Bot) -> None:
@@ -18,22 +19,22 @@ class Loop:
         self.proccess: _Loop = None
 
     def start(self) -> bool:
-        _log.Info('Demarage de la boucle principale')
+        _log.Info(Code('0.0.2.2.6'))
         self.proccess = _Loop(self.Bot)
         self.proccess.start()
 
-        _log.Info('La boucle principale a démarer')
+        _log.Info(Code('0.0.2.2.7'))
         return self.proccess.Ok
 
     def stop(self) -> bool:
         try:
-            _log.Info('Extainction de la boucle principale')
+            _log.Info(Code('0.0.2.2.8'))
             self.proccess.stop = True
         except Exception:
-            _log.Error('La boucle principale n\'a pas reussi a s\'arreter')
+            _log.Error(Code('0.0.2.2.9'))
             return False
         else:
-            _log.Info('La boucle principale est etainte')
+            _log.Info(Code('0.0.2.3.0'))
             self.proccess = None
             return True
 
@@ -92,6 +93,6 @@ class _Loop(threading.Thread):
 
                                     self._await(_user.send(embed=discord.Embed(title = 'Tu a été demute du serveur {0}'.format(_guild.name))))
             except Exception as e:
-                _log.Error('La boucle principale a rencontré un probleme\nErreur {0}'.format(e))
+                _log.Error(Code('0.0.2.3.1').format(error = e))
 
             sleep(1)

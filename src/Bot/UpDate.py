@@ -1,22 +1,23 @@
-from typing import Union
+from .GetLang                   import Code
+from .Logger                    import Logger
+from .Utils                     import decimal
 
-from time     import monotonic
-from typing   import Union
-from zipfile  import ZipFile
-from .Logger  import Logger
-from .Utils   import decimal
-from pip._internal.exceptions import *
-
-try:
-    from requests             import Session, exceptions, Response
-except ImportError:
-    from pip._vendor.requests import Session, exceptions, Response
+_log = Logger(__name__)
 
 import json
 import pip
 import os
 
-_log = Logger(__name__)
+from typing                     import Union
+from time                       import monotonic
+from typing                     import Union
+from zipfile                    import ZipFile
+from pip._internal.exceptions   import *
+
+try:
+    from requests               import Session, exceptions, Response
+except ImportError:
+    from pip._vendor.requests   import Session, exceptions, Response
 
 class UpDate:
     URL     = 'https://raw.githubusercontent.com/Romaindu74/Bots/main/{Name}.{ext}'
@@ -25,14 +26,14 @@ class UpDate:
 
     def Start(self) -> bool:
         if not self.Modules():
-            _log.Error('Une erreur est survenue lors de la verification des modules')
+            _log.Error(Code('0.0.2.5.1'))
             return False
 
-        _log.Info('Verification des mise a jour')
+        _log.Info(Code('0.0.2.5.2'))
         if not self.File():
-            _log.Error('Une erreur est survenue lors du telechargement des fichier')
+            _log.Error(Code('0.0.2.5.3'))
             return False
-        _log.Info('Verification terminer')
+        _log.Info(Code('0.0.2.5.4'))
 
         return True
 
@@ -52,7 +53,7 @@ class UpDate:
         return None
 
     def Modules(self) -> bool:
-        _log.Info('Recuperation des modules requis')
+        _log.Info(Code('0.0.2.5.5'))
         request = self.send('Modules')
         if request is None:
             return False
@@ -62,7 +63,7 @@ class UpDate:
         except exceptions.JSONDecodeError:
             return False
         else:
-            _log.Info('Instalation des modules')
+            _log.Info(Code('0.0.2.5.6'))
             for module in modules:
                 try:
                     __import__(module)
@@ -70,14 +71,14 @@ class UpDate:
                     try:
                         pip.main(['install', module])
                     except DistributionNotFound:
-                        _log.Warn(f'Module {module} is not found')
+                        _log.Warn(Code('0.0.2.5.7').format(module = module))
                     except BestVersionAlreadyInstalled:
                         pass
-            _log.Info('Instalation des modules fini')
+            _log.Info(Code('0.0.2.5.8'))
             return True
 
     def File(self) -> bool:
-        _log.Info('Recuperation de la derniere version')
+        _log.Info(Code('0.0.2.5.9'))
         request = self.send('Version')
 
         if request is None:
@@ -90,7 +91,7 @@ class UpDate:
         else:
             version: str  = version.get('Version', '0.0.0.0')[-1]
 
-        _log.Info('Version trouvé: {0}'.format(version))
+        _log.Info(Code('0.0.2.6.0').format(version = version))
 
         try:
             with open('{0}/User/__Json__/Main.json'.format(self.Path), 'r') as f:
@@ -102,10 +103,10 @@ class UpDate:
         bot_version = self.main.get('Version', '0.0.0.0')
 
         if version == bot_version:
-            _log.Info('Les version coresponde')
+            _log.Info(Code('0.0.2.6.1'))
             return True
 
-        _log.Info('Lancement de l\'instalation')
+        _log.Info(Code('0.0.2.6.2'))
         request = self.send(f'V {version}', 'zip', True)
         f = open(f'V {version}.file', 'wb')
 
@@ -131,8 +132,8 @@ class UpDate:
         f.close()
         print('\n')
 
-        _log.Info('Telechargement fini en {0}s'.format(round(monotonic() - time, 2)))
-        _log.Info('Decompilation')
+        _log.Info(Code('0.0.2.6.3').format(seconde = round(monotonic() - time, 2)))
+        _log.Info(Code('0.0.2.6.4'))
 
         with ZipFile(f'V {version}.file', 'r') as obj_zip:
             Files = obj_zip.namelist()
@@ -148,18 +149,18 @@ class UpDate:
                     file.close()
 
         os.remove(f'V {version}.file')
-        _log.Info('l\'installation a été terminé avec succès')
+        _log.Info(Code('0.0.2.6.5'))
 
         self.main['Version'] = version
 
         os.makedirs('{0}/User/__Json__/'.format(self.Path), 777, True)
         try:
             with open('{0}/User/__Json__/Main.json'.format(self.Path), 'w') as f:
-                json.dump(self.main, f, ident = 4)
+                json.dump(self.main, f, indent = 4)
                 f.close()
         except FileNotFoundError:
             with open('{0}/User/__Json__/Main.json'.format(self.Path), 'w+') as f:
-                json.dump(self.main, f, ident = 4)
+                json.dump(self.main, f, indent = 4)
                 f.close()
 
         return True
