@@ -4,5 +4,6 @@
     "youtube_dl": "youtube_dl",
     "requests": "requests",
     "colorama": "colorama",
-    "nacl": "pynacl"
+    "nacl": "pynacl",
+    "kivymd": "kivymd"
 }
