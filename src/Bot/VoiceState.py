@@ -62,7 +62,7 @@ class Song:
         return embed
 
 class VoiceState:
-    def __init__(self, Bot: Bot, ctx: commands.Context) -> None:
+    def __init__(self, Bot: Bot, ctx: Union[commands.Context, discord.Interaction]) -> None:
         self.Bot     = Bot
 
         self.client  = self.Bot.Client
@@ -143,7 +143,11 @@ class VoiceState:
                     
 
                     if not self.loop:
-                        await send(self.ctx, embed=self.current.create_embed(self.ctx.author.id), reference=False)
+                        if isinstance(self.ctx, commands.Context):
+                            await send(self.ctx, embed=self.current.create_embed(self.ctx.author.id), reference=False)
+                        else:
+                            await self.ctx.channel.send(embed=self.current.create_embed(self.ctx.user.id))
+
                         del self.songs[0]
 
                         if len(self.songs) == 0:
@@ -168,7 +172,7 @@ class VoiceState:
 
         self.songs = []
 
-    async def _join(self, ctx: commands.Context) -> bool:
+    async def _join(self, ctx: Union[commands.Context, discord.Interaction]) -> bool:
         if (self.audio_task.cancelled()):
             self.audio_task = self.client.loop.create_task(self._audio_task())
 
@@ -177,7 +181,11 @@ class VoiceState:
                 return False
 
         try:
-            destination = ctx.author.voice.channel
+            if isinstance(ctx, commands.Context):
+                destination = ctx.author.voice.channel
+            else:
+                destination = ctx.user.voice.channel
+
             self.voice = await destination.connect(self_deaf=True)
             return True
         except Exception as e:
@@ -200,7 +208,7 @@ class VoiceState:
             _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
-    async def _play(self, ctx: commands.Context, search: str) -> None:
+    async def _play(self, ctx: Union[commands.Context, discord.Interaction], search: str) -> None:
         if not self.voice:
             if not await self._join(ctx):
                 return
@@ -216,7 +224,11 @@ class VoiceState:
 
             elif 'title' in data:
                 self.songs.append({"url": data.get('webpage_url'), "name": data.get('title')})
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.3').format(name = data.get('title')))
+                if isinstance(ctx, commands.Context):
+                    await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.3').format(name = data.get('title')))
+
+                elif isinstance(ctx, discord.Interaction):
+                    await ctx.response.send_message(Get_User_Lang(ctx.user.id).get('0.0.2.7.3').format(name = data.get('title')))
                 if not self.play:
                     self.play = True
 
@@ -227,11 +239,14 @@ class VoiceState:
 
                     self.video_by_name = self.client.loop.create_task(self._video_by_name(ctx, data))
 
-    async def _playlist(self, ctx: commands.Context, data: dict):
+    async def _playlist(self, ctx: Union[commands.Context, discord.Interaction], data: dict):
         n = 0
         for entrie in data.get('entries'):
             n+=1;self.songs.append({"url": "https://www.youtube.com/watch?v=" + entrie.get('url'), "name": entrie.get('title')})
-        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.4').format(list = n, name = data.get('title')))
+        if isinstance(ctx, commands.Context):
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.4').format(list = n, name = data.get('title')))
+        else:
+            await ctx.response.send_message(Get_User_Lang(ctx.user.id).get('0.0.2.7.4').format(list = n, name = data.get('title')))
 
         if not self.play:
             self.play = True
@@ -241,11 +256,15 @@ class VoiceState:
             self.playlist = None
 
 
-    async def _video_by_name(self, ctx: commands.Context, data: dict):
+    async def _video_by_name(self, ctx: Union[commands.Context, discord.Interaction], data: dict):
         n = 0
         for entrie in data.get('entries'):
             n+=1;self.songs.append({"url": "https://www.youtube.com/watch?v=" + entrie.get('url'), "name": entrie.get('title')})
-        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.3').format(name = data.get('id')))
+        if isinstance(ctx, commands.Context):
+            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.3').format(name = data.get('id')))
+        else:
+            await ctx.response.send_message(Get_User_Lang(ctx.user.id).get('0.0.2.7.3').format(name = data.get('id')))
+
 
         if not self.play:
             self.play = True
@@ -281,7 +300,7 @@ class VoiceState:
             _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
-    async def _queue(self, ctx: commands.Context, page: int):
+    async def _queue(self, ctx: Union[commands.Context, discord.Interaction], page: int = 1):
         items = 10
 
         pages = math.ceil((len(self.songs) / items))
@@ -297,17 +316,23 @@ class VoiceState:
             except IndexError:
                 break
 
-        embed = discord.Embed(description = '**{0} {1}**\n\n{2}'.format(len(self.songs), Get_User_Lang(ctx.author.id).get('0.0.0.4.4'), value))
-        embed.set_footer(text=Get_User_Lang(ctx.author.id).get('0.0.0.2.9').format(page = page, pages = pages))
+        author = ctx.author if isinstance(ctx, commands.Context) else ctx.user
+        embed = discord.Embed(description = '**{0} {1}**\n\n{2}'.format(len(self.songs), Get_User_Lang(author.id).get('0.0.0.4.4'), value))
+        embed.set_footer(text=Get_User_Lang(author.id).get('0.0.0.2.9').format(page = page, pages = pages))
 
-        await send(ctx, embed = embed)
+        if isinstance(ctx, commands.Context):
+            await send(ctx, embed = embed)
+        else:
+            await ctx.response.send_message(embed = embed)
 
-
-    async def _skip(self, ctx: commands.Context):
-            voter = ctx.author
+    async def _skip(self, ctx: Union[commands.Context, discord.Interaction]):
+            voter = ctx.author if isinstance(ctx, commands.Context) else ctx.user
 
             if voter == self.current.requester:
-                await ctx.message.add_reaction('⏭')
+                if isinstance(ctx, commands.Context):
+                    await ctx.message.add_reaction('⏭')
+                else:
+                    await ctx.response.send_message('Music skip')
                 self.loop = False
                 self.voice.stop()
                 return True
@@ -318,27 +343,37 @@ class VoiceState:
 
                 if total >= 3:
                     self.skip = []
-                    await ctx.message.add_reaction('⏭')
+                    if isinstance(ctx, commands.Context):
+                        await ctx.message.add_reaction('⏭')
+                    else:
+                        await ctx.response.send_message('Music skip')
                     self.loop = False
                     self.voice.stop()
                     return True
 
                 else:
-                    await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.6').format(total = total))
+                    if isinstance(ctx, commands.Context):
+                        await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.6').format(total = total))
+                    else:
+                        await ctx.response.send_message(Get_User_Lang(ctx.user.id).get('0.0.2.7.6').format(total = total))
 
             else:
-                await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.7'))
+                if isinstance(ctx, commands.Context):
+                    await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.7'))
+                else:
+                    await ctx.response.send_message(Get_User_Lang(ctx.user.id).get('0.0.2.7.7'))
 
-    async def _volume(self, ctx: commands.Context, volume: Union[float, bool]):
+    async def _volume(self, ctx: Union[commands.Context, discord.Interaction], volume: Union[float, bool]):
+        author = ctx.author if isinstance(ctx, commands.Context) else ctx.user
         if volume == False:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.8').format(volume = (self.volume*100)))
+            await send(ctx, message = Get_User_Lang(author.id).get('0.0.2.7.8').format(volume = (self.volume*100)))
 
         elif 0 > volume or volume > 100:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.7.9'))
+            await send(ctx, message = Get_User_Lang(author.id).get('0.0.2.7.9'))
 
         else:
             self.volume = volume/100
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.8.0').format(volume = volume))
+            await send(ctx, message = Get_User_Lang(author.id).get('0.0.2.8.0').format(volume = volume))
 
     async def _pause(self):
         try:
@@ -365,12 +400,16 @@ class VoiceState:
             _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
             return False
 
-    async def _remove(self, ctx: commands.Context, index: int):
+    async def _remove(self, ctx: Union[commands.Context, discord.Interaction], index: int):
+        author = ctx.author if isinstance(ctx, commands.Context) else ctx.user
         def reaction_check(reaction, user: discord.Member):
-            return user == ctx.author and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌') and (reaction.message.id == message.id)
+            return user == author and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌') and (reaction.message.id == message.id)
         
         music = self.songs[index-1]
-        message = await send(ctx, embed = discord.Embed(description = Get_User_Lang(ctx.author.id).get('0.0.2.8.1').format(name = music['name'], url = music['url'])))
+        if isinstance(ctx, commands.Context):
+            message = await send(ctx, embed = discord.Embed(description = Get_User_Lang(author.id).get('0.0.2.8.1').format(name = music['name'], url = music['url'])))
+        else:
+            message = await ctx.channel.send(embed = discord.Embed(description = Get_User_Lang(author.id).get('0.0.2.8.1').format(name = music['name'], url = music['url'])))
 
         await message.add_reaction('✅')
         await message.add_reaction('❌')
@@ -378,7 +417,7 @@ class VoiceState:
         try:
             reaction, user = await self.client.wait_for('reaction_add', check = reaction_check, timeout = 300)
         except asyncio.TimeoutError:
-            await send(ctx, message = Get_User_Lang(ctx.author.id).get('0.0.2.8.2'))
+            await send(ctx, message = Get_User_Lang(author.id).get('0.0.2.8.2'))
         except Exception as e:
             _log.Error(Code('0.0.0.0.1').format(file = __file__, error = str(e)))
         else:
@@ -386,6 +425,6 @@ class VoiceState:
 
             if str(reaction.emoji) == '✅':
                 del self.songs[index-1]
-                await message.edit(embed = discord.Embed(description = Get_User_Lang(ctx.author.id).get('0.0.2.8.3').format(name = music['name'])))
+                await message.edit(embed = discord.Embed(description = Get_User_Lang(author.id).get('0.0.2.8.3').format(name = music['name'])))
             else:
                 await message.delete()

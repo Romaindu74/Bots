@@ -1,3 +1,4 @@
+from typing import Union
 from .GetLang       import Code, Get_User_Lang
 from .type.Options  import Options
 from .Logger        import Logger
@@ -52,10 +53,10 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
     ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
 
-    def __init__(self, ctx: commands.Context, source: discord.FFmpegPCMAudio, *, data: dict, volume: float = 0.5):
+    def __init__(self, ctx: Union[commands.Context, discord.Interaction], source: discord.FFmpegPCMAudio, *, data: dict, volume: float = 0.5):
         super().__init__(source, volume)
 
-        self.requester = ctx.author
+        self.requester = ctx.author if isinstance(ctx, commands.Context) else ctx.user
         self.channel = ctx.channel
         self.data = data
 
@@ -75,7 +76,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         self.stream_url = data.get('url')
 
     @classmethod
-    async def create_source(cls, ctx: commands.Context, search: str, options: Options, *, loop: asyncio.BaseEventLoop = None):
+    async def create_source(cls, ctx: Union[commands.Context, discord.Interaction], search: str, options: Options, *, loop: asyncio.BaseEventLoop = None):
         loop = loop or asyncio.get_event_loop()
 
         partial = functools.partial(cls.ytdl.extract_info, search, download=False, process=False)
