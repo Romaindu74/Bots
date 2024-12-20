@@ -1,11 +1,32 @@
 {
-  "modules": [
-    "discord.py[voice]",
-    "pillow",
-    "yt_dlp",
-    "requests",
-    "colorama",
-    "pynacl",
-    "pyexecjs"
-  ]
+    "modules": [
+        {
+            "pip-name": "discord.py[voice]",
+            "import-name": "discord"
+        },
+        {
+            "pip-name": "pillow",
+            "import-name": "PIL"
+        },
+        {
+            "pip-name": "yt_dlp",
+            "import-name": "yt_dlp"
+        },
+        {
+            "pip-name": "requests",
+            "import-name": "requests"
+        },
+        {
+            "pip-name": "colorama",
+            "import-name": "colorama"
+        },
+        {
+            "pip-name": "pynacl",
+            "import-name": "nacl"
+        },
+        {
+            "pip-name": "pyexecjs",
+            "import-name": "execjs"
+        }
+    ]
 }
