@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "discord.py[voice]",
+    "pillow",
+    "yt_dlp",
+    "requests",
+    "colorama",
+    "pynacl",
+    "pyexecjs"
+  ]
+}
