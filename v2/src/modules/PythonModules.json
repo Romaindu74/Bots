@@ -2,11 +2,13 @@
     "modules": [
         {
             "pip-name": "discord.py[voice]",
-            "import-name": "discord"
+            "import-name": "discord",
+            "required": true
         },
         {
             "pip-name": "pillow",
-            "import-name": "PIL"
+            "import-name": "PIL",
+            "required": true
         },
         {
             "pip-name": "yt_dlp",
@@ -26,7 +28,8 @@
         },
         {
             "pip-name": "pyexecjs",
-            "import-name": "execjs"
+            "import-name": "execjs",
+            "required": true
         }
     ]
 }
