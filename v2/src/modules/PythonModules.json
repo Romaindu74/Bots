@@ -27,9 +27,8 @@
             "import-name": "nacl"
         },
         {
-            "pip-name": "pyexecjs",
-            "import-name": "execjs",
-            "required": true
+            "pip-name": "rich",
+            "import-name": "rich"
         }
     ]
 }
